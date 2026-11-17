@@ -326,7 +326,7 @@ td{color:#425466}
           <span class="tag">YOLO + Gemini Vision</span>
         </div>
 
-        <div class="form-grid" style="margin-top:14px">
+        <div class="form-grid" id="aiConfigGrid" style="margin-top:14px">
           <div class="field" id="aiKeyRow">
             <label for="aiKey">Roboflow API key (Publishable or Private)</label>
             <input id="aiKey" type="password" autocomplete="off" placeholder="Paste your Roboflow API key once">
@@ -698,8 +698,8 @@ function calculateImpact() {
 }
 
 /* ===== HYBRID AI PHOTO DETECTION (Roboflow + Gemini Vision Fallback) ===== */
-const AI_API_KEY = '';
-const GEMINI_API_KEY = '';
+const AI_API_KEY = '';      // Optional: paste Roboflow Publishable key here to hide UI input
+const GEMINI_API_KEY = '';  // Optional: paste Gemini API key here to hide UI input
 const AI_MIN_CONF = 0.15;
 const GEMINI_FALLBACK_THRESHOLD = 1.01;
 const AI_MAX_SIDE = 1024;
@@ -751,7 +751,46 @@ function aiDrawBase() {
   return cv;
 }
 
-/* Gemini Vision Verification Helper (supports both AIza... and AQ... keys) */
+/* Shared Gemini API caller with automatic model discovery */
+async function callGeminiAPI(apiKey, bodyObj) {
+  const headers = {
+    'Content-Type': 'application/json',
+    'x-goog-api-key': apiKey.trim()
+  };
+  const payload = JSON.stringify(bodyObj);
+  const modelsToTry = ['gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-2.0-flash'];
+  let res = null;
+
+  for (const m of modelsToTry) {
+    res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent`, {
+      method: 'POST', headers, body: payload
+    });
+    if (res.ok || res.status !== 404) break;
+  }
+
+  if (res && res.status === 404) {
+    const listRes = await fetch('https://generativelanguage.googleapis.com/v1beta/models', { headers });
+    if (listRes.ok) {
+      const listData = await listRes.json();
+      const found = (listData.models || []).find(m =>
+        (m.supportedGenerationMethods || []).includes('generateContent') && /flash/i.test(m.name)
+      );
+      if (found) {
+        res = await fetch(`https://generativelanguage.googleapis.com/v1beta/${found.name}:generateContent`, {
+          method: 'POST', headers, body: payload
+        });
+      }
+    }
+  }
+
+  if (!res || !res.ok) {
+    const errBody = res ? await res.text() : '';
+    throw new Error(`Gemini error ${res ? res.status : 'network'}: ${errBody.slice(0, 120)}`);
+  }
+  return await res.json();
+}
+
+/* Gemini Vision Verification Helper */
 async function verifyWithGeminiVision(base64Image, geminiKey, existingBoxes, canvasW, canvasH) {
   const validClasses = Object.keys(aiGuide).join(', ');
   const prompt = `Identify the primary medical, laboratory, or waste item shown in this photo.
@@ -770,25 +809,16 @@ Return ONLY valid JSON in this exact format:
 {"class": "<exact_label_from_list>", "confidence": 0.95, "box_2d": [ymin, xmin, ymax, xmax]}
 where box_2d uses normalized coordinates from 0 to 1000 around the main item.`;
 
-  const res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-goog-api-key': geminiKey.trim()
-    },
-    body: JSON.stringify({
-      contents: [{
-        parts: [
-          { text: prompt },
-          { inline_data: { mime_type: 'image/jpeg', data: base64Image } }
-        ]
-      }],
-      generationConfig: { temperature: 0.1, responseMimeType: 'application/json' }
-    })
+  const json = await callGeminiAPI(geminiKey, {
+    contents: [{
+      parts: [
+        { text: prompt },
+        { inline_data: { mime_type: 'image/jpeg', data: base64Image } }
+      ]
+    }],
+    generationConfig: { temperature: 0.1, responseMimeType: 'application/json' }
   });
 
-  if (!res.ok) throw new Error('Gemini Vision error ' + res.status);
-  const json = await res.json();
   const rawText = json.candidates?.[0]?.content?.parts?.[0]?.text || '';
   const cleaned = rawText.replace(/```json|```/g, '').trim();
   const parsed = JSON.parse(cleaned);
@@ -1036,7 +1066,13 @@ async function aiSnap() {
     const gk = localStorage.getItem(GEMINI_STORE);
     if (gk) { gemFallEl.value = gk; gemChatEl.value = gk; }
   } catch (e) {}
-  if (AI_API_KEY) document.getElementById('aiKeyRow').style.display = 'none';
+
+  if (AI_API_KEY && GEMINI_API_KEY) {
+    document.getElementById('aiConfigGrid').style.display = 'none';
+    document.getElementById('chatCfgBtn').style.display = 'none';
+  } else if (AI_API_KEY) {
+    document.getElementById('aiKeyRow').style.display = 'none';
+  }
 
   gemFallEl.addEventListener('input', () => {
     const val = gemFallEl.value.trim();
@@ -1073,7 +1109,7 @@ async function aiSnap() {
   const modeLabel = document.getElementById('chatModeLabel');
 
   try {
-    const saved = localStorage.getItem(GEMINI_STORE);
+    const saved = GEMINI_API_KEY || localStorage.getItem(GEMINI_STORE);
     if (saved) {
       keyInput.value = saved;
       if (gemFallEl) gemFallEl.value = saved;
@@ -1129,7 +1165,7 @@ async function aiSnap() {
 
   async function askAI(question) {
     addMsg(escapeHtml(question), 'user');
-    const apiKey = keyInput.value.trim();
+    const apiKey = (GEMINI_API_KEY || keyInput.value || '').trim();
 
     if (!apiKey) {
       setTimeout(() => addMsg(localAnswer(question), 'bot'), 220);
@@ -1139,22 +1175,13 @@ async function aiSnap() {
     const typing = addMsg('Thinking...', 'bot');
     try {
       const systemPrompt = 'You are BioSafe AI, a concise, helpful biomedical waste management assistant for an educational portal based on the Indian Biomedical Waste Management Rules, 2016 (Yellow, Red, White translucent, and Blue categories). Keep answers clear, accurate, safety-first, and under 120 words.';
-      const res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-goog-api-key': apiKey
-        },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: systemPrompt + '\n\nUser question: ' + question }] }]
-        })
+      const data = await callGeminiAPI(apiKey, {
+        contents: [{ parts: [{ text: systemPrompt + '\n\nUser question: ' + question }] }]
       });
-      if (!res.ok) throw new Error('API error ' + res.status);
-      const data = await res.json();
       const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || localAnswer(question);
       typing.innerHTML = escapeHtml(reply).replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
     } catch (err) {
-      typing.innerHTML = localAnswer(question) + '<br><small style="color:#84939d">(Offline fallback used — check your Gemini API key in ⚙)</small>';
+      typing.innerHTML = localAnswer(question) + '<br><small style="color:#84939d">(Offline fallback used — check your Gemini API key)</small>';
     }
   }
 

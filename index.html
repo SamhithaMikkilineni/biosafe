@@ -342,8 +342,8 @@ td{color:#425466}
           </div>
           <div class="field full">
             <label for="aiGeminiFallbackKey">Gemini API key (High-Accuracy Vision Fallback &amp; AI Chat)</label>
-            <input id="aiGeminiFallbackKey" type="password" autocomplete="off" placeholder="Paste free Google Gemini API key (AIzaSy...) for instant high-accuracy recognition">
-            <div class="ai-hint">Optional but recommended: Automatically corrects low-confidence YOLO detections (e.g., white masks, glass test tubes) and powers the ✦ BioSafe AI chat.</div>
+            <input id="aiGeminiFallbackKey" type="password" autocomplete="off" placeholder="Paste free Google Gemini API key (AIzaSy... or AQ...) for high-accuracy recognition">
+            <div class="ai-hint">Optional but recommended: Automatically verifies detections (e.g., white masks, glass test tubes) and powers the ✦ BioSafe AI chat.</div>
           </div>
         </div>
 
@@ -416,7 +416,7 @@ td{color:#425466}
   </div>
   <div class="chat-cfg" id="chatCfg">
     <label for="geminiKey"><b>Gemini API key</b> (shared with photo detector, stored only in browser):</label>
-    <input id="geminiKey" type="password" placeholder="AIzaSy...">
+    <input id="geminiKey" type="password" placeholder="AIzaSy... or AQ...">
   </div>
   <div class="chat-msgs" id="chatMsgs">
     <div class="msg bot">Hi! I’m your <b>BioSafe AI Assistant</b>. Ask me which colour bin an item belongs in, sharps disposal rules, autoclaving vs. chemical disinfection, or how to log records.</div>
@@ -699,9 +699,9 @@ function calculateImpact() {
 
 /* ===== HYBRID AI PHOTO DETECTION (Roboflow + Gemini Vision Fallback) ===== */
 const AI_API_KEY = '';
-const GEMINI_API_KEY = ''; // Optional: paste Gemini API key here, or enter it in the UI
+const GEMINI_API_KEY = '';
 const AI_MIN_CONF = 0.15;
-const GEMINI_FALLBACK_THRESHOLD = 1.01; // Triggers Gemini Vision whenever Roboflow confidence is below 75%
+const GEMINI_FALLBACK_THRESHOLD = 1.01;
 const AI_MAX_SIDE = 1024;
 const AI_KEY_STORE = 'biosafe_roboflow_key';
 const AI_MODEL_STORE = 'biosafe_roboflow_model';
@@ -751,7 +751,7 @@ function aiDrawBase() {
   return cv;
 }
 
-/* Gemini Vision Verification Helper */
+/* Gemini Vision Verification Helper (supports both AIza... and AQ... keys) */
 async function verifyWithGeminiVision(base64Image, geminiKey, existingBoxes, canvasW, canvasH) {
   const validClasses = Object.keys(aiGuide).join(', ');
   const prompt = `Identify the primary medical, laboratory, or waste item shown in this photo.
@@ -766,13 +766,16 @@ Pay close attention to material differences:
 - Plastic IV tubing -> "tube"
 - Plastic saline/fluid bottles -> "fluid bottle"
 
-Return ONLY valid JSON in this exact format (no markdown, no explanation):
+Return ONLY valid JSON in this exact format:
 {"class": "<exact_label_from_list>", "confidence": 0.95, "box_2d": [ymin, xmin, ymax, xmax]}
 where box_2d uses normalized coordinates from 0 to 1000 around the main item.`;
 
-  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(geminiKey.trim())}`, {
+  const res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'x-goog-api-key': geminiKey.trim()
+    },
     body: JSON.stringify({
       contents: [{
         parts: [
@@ -790,7 +793,6 @@ where box_2d uses normalized coordinates from 0 to 1000 around the main item.`;
   const cleaned = rawText.replace(/```json|```/g, '').trim();
   const parsed = JSON.parse(cleaned);
 
-  // Convert Gemini [ymin, xmin, ymax, xmax] (0-1000) or reuse Roboflow box
   let x = canvasW / 2, y = canvasH / 2, width = canvasW * 0.6, height = canvasH * 0.6;
   if (existingBoxes && existingBoxes.length) {
     x = existingBoxes[0].x;
@@ -850,7 +852,6 @@ async function detectWaste(imageFileOrCanvas, apiKey, modelId, version, geminiKe
   const preds = Array.isArray(roboflowData.predictions) ? roboflowData.predictions : [];
   const topConf = preds.length ? Math.max(...preds.map(p => p.confidence || 0)) : 0;
 
-  // Trigger Gemini Vision fallback if confidence < 75% (or no detections) and Gemini key is available
   if (geminiKey && geminiKey.trim() && topConf < GEMINI_FALLBACK_THRESHOLD) {
     try {
       const imgW = (roboflowData.image && roboflowData.image.width) || cw;
@@ -861,9 +862,9 @@ async function detectWaste(imageFileOrCanvas, apiKey, modelId, version, geminiKe
         image: { width: imgW, height: imgH },
         usedFallback: true
       };
-      } catch (gemErr) {
-        throw new Error("Gemini Vision failed: " + gemErr.message);
-      }
+    } catch (gemErr) {
+      throw new Error("Gemini Vision failed: " + gemErr.message);
+    }
   }
 
   return roboflowData;
@@ -941,20 +942,20 @@ async function aiDetect() {
     const all = Array.isArray(data.predictions) ? data.predictions : [];
     const scale = (data.image && data.image.width) ? cv.width / data.image.width : 1;
     const imgArea = (data.image && data.image.width && data.image.height)
-  ? data.image.width * data.image.height
-  : cv.width * cv.height;
+      ? data.image.width * data.image.height
+      : cv.width * cv.height;
 
-const rawDets = all.filter(d => {
-  if (d.confidence < AI_MIN_CONF) return false;
-  const boxArea = (d.width || 0) * (d.height || 0);
-  return boxArea < imgArea * 0.72;
-});
+    const rawDets = all.filter(d => {
+      if (d.confidence < AI_MIN_CONF) return false;
+      const boxArea = (d.width || 0) * (d.height || 0);
+      return boxArea < imgArea * 0.72;
+    });
 
-const generic = new Set(['plastic', 'paper']);
-const specific = rawDets.filter(d => !generic.has(aiNorm(d.class || d.class_name || '')));
-const pool = specific.length ? specific : rawDets;
-const topDet = [...pool].sort((a, b) => b.confidence - a.confidence)[0];
-const dets = topDet ? [topDet] : [];
+    const generic = new Set(['plastic', 'paper']);
+    const specific = rawDets.filter(d => !generic.has(aiNorm(d.class || d.class_name || '')));
+    const pool = specific.length ? specific : rawDets;
+    const topDet = [...pool].sort((a, b) => b.confidence - a.confidence)[0];
+    const dets = topDet ? [topDet] : [];
 
     aiDrawBoxes(cv, dets, scale);
 
@@ -1037,7 +1038,6 @@ async function aiSnap() {
   } catch (e) {}
   if (AI_API_KEY) document.getElementById('aiKeyRow').style.display = 'none';
 
-  // Keep both Gemini key inputs synchronized
   gemFallEl.addEventListener('input', () => {
     const val = gemFallEl.value.trim();
     gemChatEl.value = val;
@@ -1139,9 +1139,12 @@ async function aiSnap() {
     const typing = addMsg('Thinking...', 'bot');
     try {
       const systemPrompt = 'You are BioSafe AI, a concise, helpful biomedical waste management assistant for an educational portal based on the Indian Biomedical Waste Management Rules, 2016 (Yellow, Red, White translucent, and Blue categories). Keep answers clear, accurate, safety-first, and under 120 words.';
-      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`, {
+      const res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-goog-api-key': apiKey
+        },
         body: JSON.stringify({
           contents: [{ parts: [{ text: systemPrompt + '\n\nUser question: ' + question }] }]
         })

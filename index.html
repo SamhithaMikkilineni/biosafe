@@ -940,12 +940,21 @@ async function aiDetect() {
     const data = await detectWaste(cv, key, modelId, modelVer, gemKey);
     const all = Array.isArray(data.predictions) ? data.predictions : [];
     const scale = (data.image && data.image.width) ? cv.width / data.image.width : 1;
-    const rawDets = all.filter(d => d.confidence >= AI_MIN_CONF);
-    const generic = new Set(['plastic', 'paper']);
-    const specific = rawDets.filter(d => !generic.has(aiNorm(d.class || d.class_name || '')));
-    const pool = specific.length ? specific : rawDets;
-    const topDet = [...pool].sort((a, b) => b.confidence - a.confidence)[0];
-    const dets = topDet ? [topDet] : [];
+    const imgArea = (data.image && data.image.width && data.image.height)
+  ? data.image.width * data.image.height
+  : cv.width * cv.height;
+
+const rawDets = all.filter(d => {
+  if (d.confidence < AI_MIN_CONF) return false;
+  const boxArea = (d.width || 0) * (d.height || 0);
+  return boxArea < imgArea * 0.72;
+});
+
+const generic = new Set(['plastic', 'paper']);
+const specific = rawDets.filter(d => !generic.has(aiNorm(d.class || d.class_name || '')));
+const pool = specific.length ? specific : rawDets;
+const topDet = [...pool].sort((a, b) => b.confidence - a.confidence)[0];
+const dets = topDet ? [topDet] : [];
 
     aiDrawBoxes(cv, dets, scale);
 

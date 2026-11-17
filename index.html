@@ -93,6 +93,7 @@ td{color:#425466}
 .safety-item p{font-size:11px;color:#71808c;line-height:1.5;margin:4px 0}
 .empty{text-align:center;padding:32px;color:#8a99a4;font-size:12px}
 .footer{text-align:center;color:#98a5ae;font-size:10px;margin-top:34px}
+.mobile-menu{display:none}
 .page .welcome{gap:12px}
 .page .notice{line-height:1.65}
 .page input[type=range]{cursor:pointer}
@@ -149,8 +150,12 @@ td{color:#425466}
 .chat-head{background:var(--navy);color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
 .chat-head strong{display:block;font-size:14px}
 .chat-head small{font-size:11px;color:#9eb8c7}
+.chat-head-btns{display:flex;gap:6px}
 .chat-icon-btn{background:rgba(255,255,255,.12);border:0;color:#fff;width:28px;height:28px;border-radius:8px;font-size:13px}
 .chat-icon-btn:hover{background:rgba(255,255,255,.22)}
+.chat-cfg{background:#f5f8fa;border-bottom:1px solid var(--line);padding:10px 14px;display:none;font-size:11px}
+.chat-cfg.open{display:block}
+.chat-cfg input{width:100%;margin-top:5px;padding:8px 10px;border:1px solid #dce5e9;border-radius:8px;font-size:12px}
 .chat-msgs{flex:1;padding:14px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;background:#f8fbfc}
 .msg{max-width:85%;padding:10px 13px;border-radius:13px;font-size:12.5px;line-height:1.55;word-wrap:break-word}
 .msg.bot{align-self:flex-start;background:#fff;border:1px solid var(--line);color:var(--ink);border-bottom-left-radius:4px}
@@ -317,11 +322,32 @@ td{color:#425466}
       <div class="welcome"><div><div class="eyebrow">Feature 01 • Smart assistant</div><h2>Find the correct waste category</h2><p>Upload a photo and let the AI detect the waste item, or search by name, to see an educational category suggestion and handling reminder.</p></div><div class="welcome-mark">✦</div></div>
       <div class="card" id="aiCard" style="margin-bottom:16px">
         <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap">
-          <div><h3 style="font-size:15px;margin:0 0 4px;color:var(--navy)">📷 AI photo detection</h3><p style="font-size:12px;color:#647482;margin:0;line-height:1.6;max-width:640px">Upload or capture a photo of a waste item. The AI model identifies the item and shows the matching colour category and handling guidance.</p></div>
-          <span class="tag">BioSafe Vision AI</span>
+          <div><h3 style="font-size:15px;margin:0 0 4px;color:var(--navy)">📷 AI photo detection</h3><p style="font-size:12px;color:#647482;margin:0;line-height:1.6;max-width:640px">Upload or capture a photo of a waste item. The hybrid Roboflow + Gemini Vision model identifies the item and shows the matching colour category and handling guidance.</p></div>
+          <span class="tag">YOLO + Gemini Vision</span>
         </div>
 
-        <div class="field" style="margin-top:14px"><label for="aiFile">Choose a photo from your device</label><input id="aiFile" type="file" accept="image/*"></div>
+        <div class="form-grid" style="margin-top:14px">
+          <div class="field" id="aiKeyRow">
+            <label for="aiKey">Roboflow API key (Publishable or Private)</label>
+            <input id="aiKey" type="password" autocomplete="off" placeholder="Paste your Roboflow API key once">
+            <div class="ai-hint">Roboflow &rarr; Settings &rarr; API Keys. Saved only in this browser.</div>
+          </div>
+          <div class="field">
+            <label for="aiModelId">Roboflow Model ID / Version</label>
+            <div style="display:flex;gap:8px">
+              <input id="aiModelId" type="text" value="biomedical-waste-detection-nv7fq-bpeeu-zfv7l" placeholder="project-id" style="flex:3">
+              <input id="aiModelVer" type="text" value="2" placeholder="ver" style="flex:1">
+            </div>
+            <div class="ai-hint">Found in Roboflow &rarr; Deploy &rarr; Hosted API URL.</div>
+          </div>
+          <div class="field full">
+            <label for="aiGeminiFallbackKey">Gemini API key (High-Accuracy Vision Fallback &amp; AI Chat)</label>
+            <input id="aiGeminiFallbackKey" type="password" autocomplete="off" placeholder="Paste free Google Gemini API key (AIzaSy...) for instant high-accuracy recognition">
+            <div class="ai-hint">Optional but recommended: Automatically corrects low-confidence YOLO detections (e.g., white masks, glass test tubes) and powers the ✦ BioSafe AI chat.</div>
+          </div>
+        </div>
+
+        <div class="field" style="margin-top:12px"><label for="aiFile">Choose a photo from your device</label><input id="aiFile" type="file" accept="image/*"></div>
         <div class="form-actions" style="flex-wrap:wrap">
           <button class="btn" id="aiCamBtn" type="button">📷 Use camera</button>
           <button class="btn outline" id="aiRun" type="button">Detect again</button>
@@ -381,9 +407,16 @@ td{color:#425466}
   <div class="chat-head">
     <div>
       <strong>BioSafe AI Assistant</strong>
-      <small>Biomedical Waste Guidance • Online</small>
+      <small id="chatModeLabel">Instant Rules Mode • Ready</small>
     </div>
-    <button class="chat-icon-btn" id="chatCloseBtn" type="button" title="Close">✕</button>
+    <div class="chat-head-btns">
+      <button class="chat-icon-btn" id="chatCfgBtn" type="button" title="Gemini API Key">⚙</button>
+      <button class="chat-icon-btn" id="chatCloseBtn" type="button" title="Close">✕</button>
+    </div>
+  </div>
+  <div class="chat-cfg" id="chatCfg">
+    <label for="geminiKey"><b>Gemini API key</b> (shared with photo detector, stored only in browser):</label>
+    <input id="geminiKey" type="password" placeholder="AIzaSy...">
   </div>
   <div class="chat-msgs" id="chatMsgs">
     <div class="msg bot">Hi! I’m your <b>BioSafe AI Assistant</b>. Ask me which colour bin an item belongs in, sharps disposal rules, autoclaving vs. chemical disinfection, or how to log records.</div>
@@ -400,15 +433,6 @@ td{color:#425466}
 </div>
 
 <script>
-/* =====================================================================
-   PUBLIC CONFIGURATION: Paste your API keys below before committing
-   ===================================================================== */
-const AI_API_KEY = 'YOUR_ROBOFLOW_PUBLISHABLE_KEY';
-const ROBOFLOW_MODEL_ID = 'biomedical-waste-detection-nv7fq-bpeeu-zfv7l';
-const ROBOFLOW_VERSION = '2';
-const GEMINI_API_KEY = 'YOUR_GEMINI_API_KEY';
-/* ===================================================================== */
-
 const portalScreen = document.getElementById('portalScreen');
 function enterBioSafe() {
   portalScreen.classList.add('hidden');
@@ -673,10 +697,16 @@ function calculateImpact() {
   document.getElementById('impactResult').textContent = q.toFixed(2) + ' kg of ' + cat + ' category waste recorded for this learning example. ' + notes[cat] + ' Quantity alone does not measure pollution; environmental risk depends on waste composition, handling and treatment.';
 }
 
-/* ===== HYBRID AI PHOTO DETECTION (Roboflow + Gemini Vision) ===== */
+/* ===== HYBRID AI PHOTO DETECTION (Roboflow + Gemini Vision Fallback) ===== */
+const AI_API_KEY = '';
+const GEMINI_API_KEY = ''; // Optional: paste Gemini API key here, or enter it in the UI
 const AI_MIN_CONF = 0.15;
-const GEMINI_FALLBACK_THRESHOLD = 1.01;
+const GEMINI_FALLBACK_THRESHOLD = 1.01; // Triggers Gemini Vision whenever Roboflow confidence is below 75%
 const AI_MAX_SIDE = 1024;
+const AI_KEY_STORE = 'biosafe_roboflow_key';
+const AI_MODEL_STORE = 'biosafe_roboflow_model';
+const AI_VER_STORE = 'biosafe_roboflow_ver';
+const GEMINI_STORE = 'biosafe_gemini_key';
 
 const aiColors = { Yellow: '#e7bd37', Red: '#e45b63', White: '#8c9aa4', Blue: '#4d83c5', General: '#168b83' };
 const aiGuide = {
@@ -698,9 +728,6 @@ const aiGuide = {
 
 let aiImage = null, aiBusy = false;
 
-function hasKey(k) {
-  return Boolean(k && k.trim() && !k.startsWith('YOUR_'));
-}
 function aiNorm(s) {
   return String(s).toLowerCase().replace(/[_\-]+/g, ' ').replace(/\s+/g, ' ').trim();
 }
@@ -724,7 +751,8 @@ function aiDrawBase() {
   return cv;
 }
 
-async function verifyWithGeminiVision(base64Image, existingBoxes, canvasW, canvasH) {
+/* Gemini Vision Verification Helper */
+async function verifyWithGeminiVision(base64Image, geminiKey, existingBoxes, canvasW, canvasH) {
   const validClasses = Object.keys(aiGuide).join(', ');
   const prompt = `Identify the primary medical, laboratory, or waste item shown in this photo.
 Choose the single best matching label from this exact list: [${validClasses}].
@@ -738,11 +766,11 @@ Pay close attention to material differences:
 - Plastic IV tubing -> "tube"
 - Plastic saline/fluid bottles -> "fluid bottle"
 
-Return ONLY valid JSON in this exact format:
+Return ONLY valid JSON in this exact format (no markdown, no explanation):
 {"class": "<exact_label_from_list>", "confidence": 0.95, "box_2d": [ymin, xmin, ymax, xmax]}
 where box_2d uses normalized coordinates from 0 to 1000 around the main item.`;
 
-  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(GEMINI_API_KEY.trim())}`, {
+  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(geminiKey.trim())}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -756,11 +784,13 @@ where box_2d uses normalized coordinates from 0 to 1000 around the main item.`;
     })
   });
 
-  if (!res.ok) throw new Error('Vision service returned status ' + res.status);
+  if (!res.ok) throw new Error('Gemini Vision error ' + res.status);
   const json = await res.json();
   const rawText = json.candidates?.[0]?.content?.parts?.[0]?.text || '';
-  const parsed = JSON.parse(rawText.replace(/```json|```/g, '').trim());
+  const cleaned = rawText.replace(/```json|```/g, '').trim();
+  const parsed = JSON.parse(cleaned);
 
+  // Convert Gemini [ymin, xmin, ymax, xmax] (0-1000) or reuse Roboflow box
   let x = canvasW / 2, y = canvasH / 2, width = canvasW * 0.6, height = canvasH * 0.6;
   if (existingBoxes && existingBoxes.length) {
     x = existingBoxes[0].x;
@@ -779,62 +809,64 @@ where box_2d uses normalized coordinates from 0 to 1000 around the main item.`;
     class: parsed.class,
     confidence: parsed.confidence || 0.95,
     x, y, width, height,
-    source: 'AI Verified'
+    source: 'Gemini Vision'
   }];
 }
 
-async function detectWaste(cv) {
-  const base64Image = cv.toDataURL("image/jpeg", 0.9).split(",")[1];
-  const cw = cv.width, ch = cv.height;
+/* Hybrid Roboflow + Gemini Vision Detection Function */
+async function detectWaste(imageFileOrCanvas, apiKey, modelId, version, geminiKey) {
+  const MODEL_ID = (modelId || "biomedical-waste-detection-nv7fq-bpeeu-zfv7l").trim();
+  const VERSION = (version || "2").trim();
+
+  let base64Image, cw = 640, ch = 640;
+  if (imageFileOrCanvas instanceof HTMLCanvasElement) {
+    base64Image = imageFileOrCanvas.toDataURL("image/jpeg", 0.9).split(",")[1];
+    cw = imageFileOrCanvas.width;
+    ch = imageFileOrCanvas.height;
+  } else {
+    base64Image = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result.split(",")[1]);
+      reader.onerror = (error) => reject(error);
+      reader.readAsDataURL(imageFileOrCanvas);
+    });
+  }
 
   let roboflowData = { predictions: [], image: { width: cw, height: ch } };
-  if (hasKey(AI_API_KEY)) {
-    const url = `https://detect.roboflow.com/${encodeURIComponent(ROBOFLOW_MODEL_ID)}/${encodeURIComponent(ROBOFLOW_VERSION)}?api_key=${encodeURIComponent(AI_API_KEY.trim())}&confidence=15`;
+  if (apiKey && apiKey.trim()) {
+    const url = `https://detect.roboflow.com/${encodeURIComponent(MODEL_ID)}/${encodeURIComponent(VERSION)}?api_key=${encodeURIComponent(apiKey.trim())}&confidence=15`;
     const response = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: base64Image
     });
-    if (response.ok) {
-      roboflowData = await response.json();
-    } else if (!hasKey(GEMINI_API_KEY)) {
-      throw new Error(`Detection service error (${response.status})`);
+    if (!response.ok) {
+      const errText = await response.text();
+      throw new Error(`Roboflow API Error (${response.status}): ${errText}`);
     }
+    roboflowData = await response.json();
   }
 
-  const imgArea = (roboflowData.image && roboflowData.image.width && roboflowData.image.height)
-    ? roboflowData.image.width * roboflowData.image.height
-    : cw * ch;
+  const preds = Array.isArray(roboflowData.predictions) ? roboflowData.predictions : [];
+  const topConf = preds.length ? Math.max(...preds.map(p => p.confidence || 0)) : 0;
 
-  const allPreds = Array.isArray(roboflowData.predictions) ? roboflowData.predictions : [];
-  const filteredBoxes = allPreds.filter(d => {
-    if (d.confidence < AI_MIN_CONF) return false;
-    const boxArea = (d.width || 0) * (d.height || 0);
-    return boxArea < imgArea * 0.72;
-  });
-
-  const topConf = filteredBoxes.length ? Math.max(...filteredBoxes.map(p => p.confidence || 0)) : 0;
-
-  if (hasKey(GEMINI_API_KEY) && topConf < GEMINI_FALLBACK_THRESHOLD) {
+  // Trigger Gemini Vision fallback if confidence < 75% (or no detections) and Gemini key is available
+  if (geminiKey && geminiKey.trim() && topConf < GEMINI_FALLBACK_THRESHOLD) {
     try {
       const imgW = (roboflowData.image && roboflowData.image.width) || cw;
       const imgH = (roboflowData.image && roboflowData.image.height) || ch;
-      const verifiedPreds = await verifyWithGeminiVision(base64Image, filteredBoxes, imgW, imgH);
-      return { predictions: verifiedPreds, image: { width: imgW, height: imgH } };
-    } catch (gemErr) {
-      if (!filteredBoxes.length) throw gemErr;
-    }
+      const verifiedPreds = await verifyWithGeminiVision(base64Image, geminiKey, [], imgW, imgH);
+      return {
+        predictions: verifiedPreds,
+        image: { width: imgW, height: imgH },
+        usedFallback: true
+      };
+      } catch (gemErr) {
+        throw new Error("Gemini Vision failed: " + gemErr.message);
+      }
   }
 
-  const generic = new Set(['plastic', 'paper']);
-  const specific = filteredBoxes.filter(d => !generic.has(aiNorm(d.class || d.class_name || '')));
-  const pool = specific.length ? specific : filteredBoxes;
-  const topDet = [...pool].sort((a, b) => b.confidence - a.confidence)[0];
-
-  return {
-    predictions: topDet ? [topDet] : [],
-    image: roboflowData.image || { width: cw, height: ch }
-  };
+  return roboflowData;
 }
 
 function aiDrawBoxes(cv, dets, scale) {
@@ -880,10 +912,23 @@ async function aiDetect() {
   const btn = document.getElementById('aiRun'), resultsEl = document.getElementById('aiResults');
   if (!aiImage) { aiStatus('<b>Choose a photo first.</b>'); return; }
 
-  if (!hasKey(AI_API_KEY) && !hasKey(GEMINI_API_KEY)) {
-    aiStatus('<b>AI detection is currently offline.</b> Please use the text search box below to look up the waste item.');
+  const key = (AI_API_KEY || document.getElementById('aiKey').value || '').trim();
+  const gemKey = (GEMINI_API_KEY || document.getElementById('aiGeminiFallbackKey').value || document.getElementById('geminiKey').value || '').trim();
+  const modelId = document.getElementById('aiModelId').value.trim();
+  const modelVer = document.getElementById('aiModelVer').value.trim();
+
+  if (!key && !gemKey) {
+    aiStatus('<b>Enter your Roboflow API key or Gemini API key above</b>, then press the button again.');
+    document.getElementById('aiKey').focus();
     return;
   }
+
+  try {
+    if (!AI_API_KEY && key) localStorage.setItem(AI_KEY_STORE, key);
+    if (!GEMINI_API_KEY && gemKey) localStorage.setItem(GEMINI_STORE, gemKey);
+    if (modelId) localStorage.setItem(AI_MODEL_STORE, modelId);
+    if (modelVer) localStorage.setItem(AI_VER_STORE, modelVer);
+  } catch (e) {}
 
   aiBusy = true;
   btn.disabled = true;
@@ -892,14 +937,29 @@ async function aiDetect() {
 
   try {
     const cv = aiDrawBase();
-    const data = await detectWaste(cv);
-    const dets = Array.isArray(data.predictions) ? data.predictions : [];
+    const data = await detectWaste(cv, key, modelId, modelVer, gemKey);
+    const all = Array.isArray(data.predictions) ? data.predictions : [];
     const scale = (data.image && data.image.width) ? cv.width / data.image.width : 1;
+    const imgArea = (data.image && data.image.width && data.image.height)
+  ? data.image.width * data.image.height
+  : cv.width * cv.height;
+
+const rawDets = all.filter(d => {
+  if (d.confidence < AI_MIN_CONF) return false;
+  const boxArea = (d.width || 0) * (d.height || 0);
+  return boxArea < imgArea * 0.72;
+});
+
+const generic = new Set(['plastic', 'paper']);
+const specific = rawDets.filter(d => !generic.has(aiNorm(d.class || d.class_name || '')));
+const pool = specific.length ? specific : rawDets;
+const topDet = [...pool].sort((a, b) => b.confidence - a.confidence)[0];
+const dets = topDet ? [topDet] : [];
 
     aiDrawBoxes(cv, dets, scale);
 
     if (!dets.length) {
-      aiStatus('<b>No waste item could be clearly identified.</b><br>Try a clearer, closer photo with a plain background, or use the text lookup below.');
+      aiStatus('<b>No waste item detected with at least ' + Math.round(AI_MIN_CONF * 100) + '% confidence.</b><br>Try a clearer, closer photo with a plain background, or add your Gemini API key above for high-accuracy recognition.');
       return;
     }
 
@@ -908,7 +968,7 @@ async function aiDetect() {
     aiRender(dets);
   } catch (err) {
     console.error("Detection failed:", err);
-    aiStatus('<b>Detection could not be completed.</b><br>Please check your internet connection and try again, or use the item lookup below.');
+    aiStatus('<b>Detection failed.</b><br>' + escapeHtml(err.message));
   } finally {
     aiBusy = false;
     btn.disabled = false;
@@ -932,4 +992,184 @@ async function aiCamOpen() {
   } catch (e) {
     let msg = 'The camera could not be opened.';
     if (e && (e.name === 'NotAllowedError' || e.name === 'SecurityError')) msg = 'Camera permission was blocked. Click the camera or lock icon in the address bar, choose Allow, then press <b>Use camera</b> again.';
-    else if
+    else if (e && (e.name === 'NotFoundError' || e.name === 'OverconstrainedError')) msg = 'No camera was found on this device.';
+    else if (e && e.name === 'NotReadableError') msg = 'The camera is being used by another app. Close it and try again.';
+    aiStatus('<b>' + msg + '</b>');
+  }
+}
+function aiCamClose() {
+  if (aiStream) { aiStream.getTracks().forEach(t => t.stop()); aiStream = null; }
+  const v = document.getElementById('aiVideo');
+  if (v) v.srcObject = null;
+  const c = document.getElementById('aiCam');
+  if (c) c.style.display = 'none';
+}
+async function aiSnap() {
+  const v = document.getElementById('aiVideo');
+  if (!v.videoWidth) { aiStatus('The camera is still starting. Wait a second and try again.'); return; }
+  const c = document.createElement('canvas');
+  c.width = v.videoWidth;
+  c.height = v.videoHeight;
+  c.getContext('2d').drawImage(v, 0, 0);
+  const img = new Image();
+  await new Promise(res => { img.onload = res; img.src = c.toDataURL('image/jpeg', 0.92); });
+  aiImage = img;
+  aiCamClose();
+  document.getElementById('aiStage').style.display = 'block';
+  aiDrawBase();
+  document.getElementById('aiResults').innerHTML = '';
+  aiDetect();
+}
+
+(function() {
+  const fileEl = document.getElementById('aiFile'), keyEl = document.getElementById('aiKey'), btn = document.getElementById('aiRun');
+  const modEl = document.getElementById('aiModelId'), verEl = document.getElementById('aiModelVer');
+  const gemFallEl = document.getElementById('aiGeminiFallbackKey'), gemChatEl = document.getElementById('geminiKey');
+  try {
+    const k = localStorage.getItem(AI_KEY_STORE);
+    if (k) keyEl.value = k;
+    const m = localStorage.getItem(AI_MODEL_STORE);
+    if (m) modEl.value = m;
+    const v = localStorage.getItem(AI_VER_STORE);
+    if (v) verEl.value = v;
+    const gk = localStorage.getItem(GEMINI_STORE);
+    if (gk) { gemFallEl.value = gk; gemChatEl.value = gk; }
+  } catch (e) {}
+  if (AI_API_KEY) document.getElementById('aiKeyRow').style.display = 'none';
+
+  // Keep both Gemini key inputs synchronized
+  gemFallEl.addEventListener('input', () => {
+    const val = gemFallEl.value.trim();
+    gemChatEl.value = val;
+    try { localStorage.setItem(GEMINI_STORE, val); } catch (e) {}
+    document.getElementById('chatModeLabel').textContent = val ? 'Gemini AI Connected • Ready' : 'Instant Rules Mode • Ready';
+  });
+
+  fileEl.addEventListener('change', async () => {
+    const f = fileEl.files && fileEl.files[0];
+    if (!f) return;
+    try { aiImage = await aiLoadImage(f); } catch (e) { aiStatus('<b>' + escapeHtml(e.message) + '</b>'); return; }
+    document.getElementById('aiStage').style.display = 'block';
+    aiDrawBase();
+    document.getElementById('aiResults').innerHTML = '';
+    aiDetect();
+  });
+  btn.addEventListener('click', aiDetect);
+  document.getElementById('aiCamBtn').addEventListener('click', aiCamOpen);
+  document.getElementById('aiSnap').addEventListener('click', aiSnap);
+  document.getElementById('aiCamClose').addEventListener('click', aiCamClose);
+  document.querySelectorAll('.nav button').forEach(b => b.addEventListener('click', aiCamClose));
+})();
+
+/* ===== BioSafe AI Assistant ===== */
+(function() {
+  const box = document.getElementById('chatBox');
+  const fab = document.getElementById('chatFab');
+  const msgs = document.getElementById('chatMsgs');
+  const input = document.getElementById('chatInput');
+  const cfg = document.getElementById('chatCfg');
+  const keyInput = document.getElementById('geminiKey');
+  const gemFallEl = document.getElementById('aiGeminiFallbackKey');
+  const modeLabel = document.getElementById('chatModeLabel');
+
+  try {
+    const saved = localStorage.getItem(GEMINI_STORE);
+    if (saved) {
+      keyInput.value = saved;
+      if (gemFallEl) gemFallEl.value = saved;
+      modeLabel.textContent = 'Gemini AI Connected • Ready';
+    }
+  } catch (e) {}
+
+  keyInput.addEventListener('input', () => {
+    const k = keyInput.value.trim();
+    if (gemFallEl) gemFallEl.value = k;
+    try { localStorage.setItem(GEMINI_STORE, k); } catch (e) {}
+    modeLabel.textContent = k ? 'Gemini AI Connected • Ready' : 'Instant Rules Mode • Ready';
+  });
+
+  fab.addEventListener('click', () => {
+    box.classList.toggle('open');
+    if (box.classList.contains('open')) input.focus();
+  });
+  document.getElementById('chatCloseBtn').addEventListener('click', () => box.classList.remove('open'));
+  document.getElementById('chatCfgBtn').addEventListener('click', () => cfg.classList.toggle('open'));
+
+  function addMsg(html, who) {
+    const div = document.createElement('div');
+    div.className = 'msg ' + who;
+    div.innerHTML = html;
+    msgs.appendChild(div);
+    msgs.scrollTop = msgs.scrollHeight;
+    return div;
+  }
+
+  function localAnswer(q) {
+    const s = q.toLowerCase();
+    if (s.includes('needle') || s.includes('syringe') || s.includes('scalpel') || s.includes('blade') || s.includes('sharp')) {
+      return '<b>White (Translucent) Puncture-Proof Container:</b> Used needles, scalpels, blades, and fixed-needle syringes go straight into the leak-proof, tamper-proof white sharps container. Never recap, bend, or break needles by hand.';
+    }
+    if (s.includes('mask') || s.includes('gauze') || s.includes('cotton') || s.includes('bandage') || s.includes('dressing') || s.includes('anatomical') || s.includes('yellow')) {
+      return '<b>Yellow Non-Chlorinated Bag:</b> Soiled waste (blood-stained masks, gauze, dressings, cotton swabs), human/animal anatomical waste, and expired/discarded medicines belong in the Yellow bag for incineration or plasma pyrolysis.';
+    }
+    if (s.includes('glove') || s.includes('iv') || s.includes('tube') || s.includes('catheter') || s.includes('urine') || s.includes('plastic') || s.includes('red')) {
+      return '<b>Red Non-Chlorinated Bag/Container:</b> Contaminated recyclable plastics—such as gloves, IV sets, tubing, catheters, urine bags, and syringes without needles—go in the Red bin for autoclaving/microwaving followed by authorized recycling.';
+    }
+    if (s.includes('glass') || s.includes('vial') || s.includes('ampoule') || s.includes('implant') || s.includes('blue')) {
+      return '<b>Blue-Marked Rigid Container:</b> Contaminated broken or unbroken glassware, medicine vials, ampoules (excluding cytotoxic waste), and metallic body implants go in the Blue container for disinfection/autoclaving and recycling.';
+    }
+    if (s.includes('autoclave') || s.includes('treat') || s.includes('disinfect') || s.includes('incinerat')) {
+      return '<b>Treatment Overview:</b><br>• <b>Autoclaving:</b> Validated moist-heat steam sterilization for Red/Blue plastics and glassware.<br>• <b>Chemical Disinfection:</b> Approved disinfectants for eligible surfaces/liquids.<br>• <b>Incineration:</b> High-temperature oxidation for Yellow anatomical/soiled waste.';
+    }
+    if (s.includes('record') || s.includes('csv') || s.includes('log')) {
+      return 'Open <b>Daily records</b> in the left sidebar to log generated and collected weights (kg) by colour category. All entries save automatically in your browser and can be downloaded via <b>Export CSV</b>.';
+    }
+    return 'Under Indian Biomedical Waste Management Rules (2016):<br>• <b>Yellow:</b> Soiled/anatomical waste<br>• <b>Red:</b> Contaminated recyclable plastics (gloves, IV tubes)<br>• <b>White:</b> Metal sharps (needles, blades)<br>• <b>Blue:</b> Glassware, vials & metallic implants<br><br>Ask about a specific item, or click <b>⚙</b> above to connect a Gemini API key for full AI Q&A!';
+  }
+
+  async function askAI(question) {
+    addMsg(escapeHtml(question), 'user');
+    const apiKey = keyInput.value.trim();
+
+    if (!apiKey) {
+      setTimeout(() => addMsg(localAnswer(question), 'bot'), 220);
+      return;
+    }
+
+    const typing = addMsg('Thinking...', 'bot');
+    try {
+      const systemPrompt = 'You are BioSafe AI, a concise, helpful biomedical waste management assistant for an educational portal based on the Indian Biomedical Waste Management Rules, 2016 (Yellow, Red, White translucent, and Blue categories). Keep answers clear, accurate, safety-first, and under 120 words.';
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: systemPrompt + '\n\nUser question: ' + question }] }]
+        })
+      });
+      if (!res.ok) throw new Error('API error ' + res.status);
+      const data = await res.json();
+      const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || localAnswer(question);
+      typing.innerHTML = escapeHtml(reply).replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+    } catch (err) {
+      typing.innerHTML = localAnswer(question) + '<br><small style="color:#84939d">(Offline fallback used — check your Gemini API key in ⚙)</small>';
+    }
+  }
+
+  document.getElementById('chatForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const q = input.value.trim();
+    if (!q) return;
+    input.value = '';
+    askAI(q);
+  });
+
+  document.querySelectorAll('.chat-chip').forEach(btn => {
+    btn.addEventListener('click', () => askAI(btn.dataset.q));
+  });
+})();
+
+window.addEventListener('resize', () => render());
+render();
+</script>
+</body>
+</html>

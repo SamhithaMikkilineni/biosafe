@@ -765,7 +765,9 @@ async function callGeminiAPI(apiKey, bodyObj) {
     res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent`, {
       method: 'POST', headers, body: payload
     });
-    if (res.ok || res.status !== 404) break;
+    if (res.ok) break;
+    if (res.status !== 404 && res.status !== 503 && res.status !== 429) break;
+    await new Promise(r => setTimeout(r, 800));
   }
 
   if (res && res.status === 404) {

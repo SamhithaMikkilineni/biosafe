@@ -770,7 +770,7 @@ Return ONLY valid JSON in this exact format:
 {"class": "<exact_label_from_list>", "confidence": 0.95, "box_2d": [ymin, xmin, ymax, xmax]}
 where box_2d uses normalized coordinates from 0 to 1000 around the main item.`;
 
-  const res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent', {
+  const res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -1139,7 +1139,7 @@ async function aiSnap() {
     const typing = addMsg('Thinking...', 'bot');
     try {
       const systemPrompt = 'You are BioSafe AI, a concise, helpful biomedical waste management assistant for an educational portal based on the Indian Biomedical Waste Management Rules, 2016 (Yellow, Red, White translucent, and Blue categories). Keep answers clear, accurate, safety-first, and under 120 words.';
-      const res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent', {
+      const res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

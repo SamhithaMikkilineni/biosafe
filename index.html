@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BioSafe Portal | Biomedical Waste Management</title>
+<style>
+:root{--navy:#17324d;--teal:#168b83;--mint:#eaf6f3;--ink:#203247;--muted:#718096;--line:#e5edf0;--bg:#f5f8fa;--white:#fff;--yellow:#f4c542;--red:#e45b63;--blue:#4d83c5;--shadow:0 8px 26px rgba(26,55,78,.07)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select{font:inherit}button{cursor:pointer}
+.layout{display:flex;min-height:100vh}.sidebar{width:248px;background:#15324b;color:#dce9ef;padding:26px 17px;position:fixed;inset:0 auto 0 0;display:flex;flex-direction:column;z-index:5}.brand{display:flex;align-items:center;gap:11px;padding:0 10px 30px}.logo{width:39px;height:39px;border-radius:13px;background:#dff5ed;color:#167e73;display:grid;place-items:center;font-size:21px;font-weight:800}.brand strong{display:block;color:#fff;font-size:17px;letter-spacing:.2px}.brand small{color:#9eb8c7;font-size:11px}.nav-label{font-size:10px;letter-spacing:1.5px;color:#8ba7b8;padding:10px 12px}.nav button{width:100%;border:0;background:transparent;color:#c2d2dc;text-align:left;padding:12px;border-radius:10px;margin:3px 0;display:flex;gap:12px;align-items:center;font-size:13px}.nav button.active,.nav button:hover{background:#254b64;color:white}.nav .ico{width:20px;text-align:center;font-size:16px}.side-note{margin-top:auto;border:1px solid #36566c;border-radius:13px;padding:14px;font-size:11px;line-height:1.6;color:#b9ccd6}.side-note b{display:block;color:#fff;font-size:12px;margin-bottom:4px}
+.main{margin-left:248px;width:calc(100% - 248px);padding:30px 38px 48px;max-width:1600px}.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:26px}.eyebrow{font-size:11px;color:var(--teal);font-weight:800;letter-spacing:1.5px;text-transform:uppercase}.topbar h1{font-size:25px;margin:5px 0 0;color:var(--navy)}.top-right{display:flex;align-items:center;gap:12px}.date-chip{font-size:12px;color:var(--muted);background:#fff;border:1px solid var(--line);padding:10px 13px;border-radius:10px}.avatar{width:36px;height:36px;border-radius:50%;background:#d9eee9;color:#167e73;display:grid;place-items:center;font-weight:800;font-size:12px}
+.page{display:none}.page.active{display:block}.welcome{background:linear-gradient(110deg,#e4f4ef,#f2f8f7);border:1px solid #d9ebe6;border-radius:18px;padding:23px 26px;display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;overflow:hidden}.welcome h2{font-size:19px;color:#173c4e;margin:0 0 7px}.welcome p{margin:0;color:#56717a;font-size:13px;max-width:610px;line-height:1.6}.welcome-mark{font-size:56px;opacity:.85;margin-right:20px}
+.grid{display:grid;gap:16px}.stats{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:20px}.card{background:#fff;border:1px solid var(--line);border-radius:15px;padding:19px;box-shadow:var(--shadow)}.stat-top{display:flex;justify-content:space-between;align-items:center}.stat-label{font-size:12px;color:var(--muted)}.stat-icon{width:34px;height:34px;border-radius:11px;background:#edf6f4;display:grid;place-items:center}.stat-value{font-size:27px;font-weight:800;color:var(--navy);margin:13px 0 3px}.stat-foot{font-size:11px;color:#84939d}.section-head{display:flex;justify-content:space-between;align-items:center;margin:25px 0 13px}.section-head h3{font-size:15px;color:var(--navy);margin:0}.section-head p{font-size:11px;color:var(--muted);margin:4px 0 0}.btn{border:0;background:var(--teal);color:#fff;padding:10px 15px;border-radius:9px;font-size:12px;font-weight:700}.btn:hover{background:#11766f}.btn.secondary{background:#edf5f3;color:#167e73}.btn.outline{background:#fff;border:1px solid var(--line);color:var(--ink)}.charts{grid-template-columns:1.55fr 1fr}.chart-card{min-height:275px}.chart-wrap{height:205px;position:relative;margin-top:15px}.chart-wrap canvas{width:100%;height:100%}.legend{display:flex;gap:15px;flex-wrap:wrap;font-size:10px;color:var(--muted);margin-top:10px}.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
+.category-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.category{padding:0;overflow:hidden}.category-band{height:8px}.category-content{padding:17px}.category h3{margin:0 0 5px;font-size:15px}.category small{font-size:10px;color:var(--muted)}.category p{font-size:12px;line-height:1.55;color:#607080;min-height:56px}.tag{display:inline-block;border-radius:20px;padding:5px 8px;font-size:10px;font-weight:700;background:#f1f4f6;color:#526373}
+.table-card{padding:0;overflow:hidden}.table-scroll{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:650px}th,td{text-align:left;padding:13px 16px;border-bottom:1px solid #edf1f3;font-size:11px}th{color:#788895;background:#fafcfd;font-weight:700}td{color:#425466}.pill{padding:5px 8px;border-radius:20px;font-size:10px;font-weight:700}.pill.yellow{background:#fff6d7;color:#9b7411}.pill.red{background:#ffebec;color:#b53c45}.pill.white{background:#f0f2f3;color:#52616c}.pill.blue{background:#e9f1fc;color:#35679e}
+.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:13px}.field label{display:block;font-size:11px;color:#617381;font-weight:700;margin-bottom:6px}.field input,.field select{width:100%;border:1px solid #dce5e9;border-radius:9px;padding:11px 12px;background:#fff;color:var(--ink);font-size:12px;outline:none}.field input:focus,.field select:focus{border-color:var(--teal);box-shadow:0 0 0 3px #168b8318}.field.full{grid-column:1/-1}.form-actions{display:flex;gap:9px;margin-top:16px}.notice{background:#fff8e5;border:1px solid #f4e4ae;color:#79621d;border-radius:11px;padding:12px 14px;font-size:11px;line-height:1.55;margin:14px 0}.info-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.info-card h3{font-size:14px;margin:9px 0}.info-card p,.info-card li{font-size:12px;line-height:1.65;color:#647482}.info-card ul{padding-left:17px}.info-icon{width:39px;height:39px;border-radius:12px;background:#edf6f4;display:grid;place-items:center;font-size:19px}.safety-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.safety-item{display:flex;gap:12px}.safety-item b{font-size:12px}.safety-item p{font-size:11px;color:#71808c;line-height:1.5;margin:4px 0}.empty{text-align:center;padding:32px;color:#8a99a4;font-size:12px}.footer{text-align:center;color:#98a5ae;font-size:10px;margin-top:34px}
+.mobile-menu{display:none}.page .welcome{gap:12px}.page .notice{line-height:1.65}.page input[type=range]{cursor:pointer}
+@media(max-width:1050px){.stats,.category-grid{grid-template-columns:repeat(2,1fr)}.charts{grid-template-columns:1fr}.main{padding:25px}}
+@media(max-width:720px){.sidebar{width:70px;padding:18px 9px}.brand{padding:0 6px 24px}.brand div:last-child,.nav-label,.nav button span:last-child,.side-note{display:none}.nav button{justify-content:center;padding:13px 6px}.main{margin-left:70px;width:calc(100% - 70px);padding:19px 14px}.topbar h1{font-size:20px}.date-chip{display:none}.welcome{padding:18px}.welcome-mark{font-size:38px;margin:0}.welcome p{font-size:11px}.stats{gap:9px}.card{padding:14px}.stat-value{font-size:22px}.category-grid,.info-grid,.safety-grid{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}}
+
+/* BioSafe login homepage */
+.portal-screen{position:fixed;inset:0;z-index:20;background:linear-gradient(120deg,#dff5f8,#c7e8fb);display:grid;place-items:center;padding:28px;overflow:auto}
+.portal-card{width:min(1055px,100%);min-height:620px;background:#fff;border-radius:18px;overflow:hidden;display:grid;grid-template-columns:1fr 1fr;box-shadow:0 22px 60px rgba(32,78,105,.18)}
+.portal-form-side{padding:55px 9%;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.portal-symbol{font-size:55px;color:#369c55;line-height:1;margin-bottom:15px}
+.portal-form-side h1{font-size:32px;color:#273d4b;margin:0 0 8px}
+.portal-subtitle{color:#87949c;font-size:15px;margin:0 0 38px}
+.portal-fields{width:100%;max-width:430px}
+.portal-input{width:100%;height:60px;border:1px solid #e1eaf0;background:#f3f7fc;border-radius:13px;margin-bottom:22px;padding:0 18px;font-size:15px;color:#263b49;outline:none}
+.portal-input:focus{border-color:#4b9cd5;box-shadow:0 0 0 3px #4b9cd51c}
+.portal-submit{width:100%;height:60px;border:0;border-radius:12px;background:#419e4b;color:white;font-size:17px;font-weight:750;margin-top:8px;box-shadow:0 5px 12px #419e4b24}
+.portal-submit:hover{background:#338c3e}
+.portal-register{border:0;background:transparent;color:#3486b8;margin-top:25px;font-size:14px;font-weight:650}
+.portal-message{font-size:11px;color:#8a989f;line-height:1.5;margin-top:24px;max-width:430px}
+.portal-welcome{position:relative;overflow:hidden;background:linear-gradient(145deg,#42b6e8,#2389d4);color:#fff;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:55px 12%}
+.portal-welcome:before,.portal-welcome:after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.07)}
+.portal-welcome:before{width:390px;height:390px;right:-130px;bottom:-90px}
+.portal-welcome:after{width:260px;height:260px;left:-100px;top:35%}
+.portal-welcome>*{position:relative;z-index:1}
+.portal-heart{font-size:62px;margin-bottom:28px}
+.portal-welcome h2{font-size:37px;line-height:1.45;margin:0 0 17px;font-weight:750}
+.portal-welcome p{font-size:16px;line-height:1.75;color:#e8f6ff;max-width:390px;margin:0}
+.portal-kicker{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#d8f3ff;margin-top:30px}
+.portal-screen.hidden{display:none}
+@media(max-width:760px){.portal-screen{padding:14px}.portal-card{grid-template-columns:1fr;min-height:auto}.portal-form-side{padding:42px 8%}.portal-welcome{padding:38px 9%;min-height:310px}.portal-welcome h2{font-size:29px}.portal-welcome p{font-size:14px}.portal-subtitle{margin-bottom:25px}}
+
+
+/* AI photo detection */
+.ai-stage{margin-top:14px;border:1px solid var(--line);border-radius:12px;background:#f5f8fa;padding:10px;text-align:center}
+.ai-stage canvas{max-width:100%;height:auto;border-radius:8px;display:block;margin:0 auto}
+.ai-results{display:grid;gap:12px;margin-top:14px}
+.ai-item{border:1px solid var(--line);border-left:6px solid var(--teal);border-radius:12px;padding:14px 16px;background:#fff}
+.ai-head{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px}
+.ai-head b{font-size:14px;color:var(--navy);text-transform:capitalize}
+.ai-bin{font-size:12px;color:var(--ink);line-height:1.6;margin-bottom:4px}
+.ai-item p{font-size:12px;line-height:1.65;color:#607080;margin:4px 0 0}
+.ai-item p.ai-alt{color:#79621d}
+.pill.general{background:#e6f2f0;color:#167e73}
+.ai-cam{margin-top:14px;border:1px solid var(--line);border-radius:12px;background:#0f1d2b;padding:10px;text-align:center}.ai-cam video{width:100%;max-height:440px;border-radius:8px;background:#000;display:block}.ai-cam .form-actions{justify-content:center;flex-wrap:wrap}
+.ai-hint{font-size:11px;color:#84939d;margin-top:6px;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="portal-screen" id="portalScreen">
+  <div class="portal-card">
+    <section class="portal-form-side">
+      <div class="portal-symbol">✚</div>
+      <h1>BioSafe Portal</h1>
+      <p class="portal-subtitle">Biomedical Waste Management System</p>
+      <form class="portal-fields" id="portalLogin">
+        <input class="portal-input" id="portalUser" type="text" placeholder="Staff ID or Username" aria-label="Staff ID or Username" required>
+        <input class="portal-input" id="portalPassword" type="password" placeholder="Password" aria-label="Password" required>
+        <button class="portal-submit" type="submit">Sign In&nbsp; ↗</button>
+      </form>
+      <button class="portal-register" type="button" id="guestAccess">＋ Explore as Guest</button>
+      <p class="portal-message">Educational project demonstration. Do not enter real patient details or personal passwords. This prototype does not authenticate users or securely store credentials.</p>
+    </section>
+    <section class="portal-welcome">
+      <div class="portal-heart">✚</div>
+      <h2>Welcome to<br>BioSafe</h2>
+      <p>Manage biomedical waste responsibly. Explore colour-coded segregation, daily records, safe treatment awareness and environmental analytics in one place.</p>
+      <div class="portal-kicker">Safer healthcare • Cleaner environment</div>
+    </section>
+  </div>
+</div>
+
+
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand"><div class="logo">✚</div><div><strong>BioSafe</strong><small>WASTE MANAGEMENT</small></div></div>
+  <div class="nav-label">WORKSPACE</div>
+  <nav class="nav">
+    <button class="active" data-page="dashboard"><span class="ico">▦</span><span>Dashboard</span></button>
+    <button data-page="segregation"><span class="ico">◉</span><span>Waste segregation</span></button>
+    <button data-page="records"><span class="ico">▤</span><span>Daily records</span></button>
+    <button data-page="treatment"><span class="ico">⚗</span><span>Treatment guide</span></button>
+    <button data-page="analytics"><span class="ico">▥</span><span>Analytics</span></button>
+    <button data-page="safety"><span class="ico">♡</span><span>Health & safety</span></button>
+    <button data-page="smart"><span class="ico">✦</span><span>Smart segregation</span></button>
+    <button data-page="chemistry"><span class="ico">⚗</span><span>Chemistry lab</span></button>
+    <button data-page="phlab"><span class="ico">◒</span><span>pH awareness</span></button>
+    <button data-page="chemguide"><span class="ico">🧪</span><span>Chemical waste guide</span></button>
+    <button data-page="environment"><span class="ico">🌍</span><span>Environmental impact</span></button>
+
+  </nav>
+  <div class="side-note"><b>Segregate at source</b>Correct segregation protects healthcare workers, communities and the environment.</div>
+</aside>
+<main class="main">
+  <header class="topbar"><div><div class="eyebrow">Environmental care • Healthcare safety</div><h1 id="pageTitle">Dashboard overview</h1></div><div class="top-right"><div class="date-chip" id="today"></div><div class="avatar">BS</div></div></header>
+
+  <section class="page active" id="dashboard">
+    <div class="welcome"><div><div class="eyebrow">A cleaner, safer tomorrow</div><h2>Welcome to BioSafe Management</h2><p>A digital workspace to identify, segregate, record and monitor biomedical waste using the prescribed colour-coded system.</p></div><div class="welcome-mark">♻️</div></div>
+    <div class="grid stats">
+      <div class="card"><div class="stat-top"><span class="stat-label">Total waste generated</span><span class="stat-icon">⚖️</span></div><div class="stat-value" id="totalGenerated">0.0 kg</div><div class="stat-foot">Across all recorded entries</div></div>
+      <div class="card"><div class="stat-top"><span class="stat-label">Waste collected</span><span class="stat-icon">🚚</span></div><div class="stat-value" id="totalCollected">0.0 kg</div><div class="stat-foot">Marked as collected</div></div>
+      <div class="card"><div class="stat-top"><span class="stat-label">Pending collection</span><span class="stat-icon">◷</span></div><div class="stat-value" id="pending">0.0 kg</div><div class="stat-foot">Awaiting authorised collection</div></div>
+      <div class="card"><div class="stat-top"><span class="stat-label">Record entries</span><span class="stat-icon">▤</span></div><div class="stat-value" id="entryCount">0</div><div class="stat-foot">Saved on this browser</div></div>
+    </div>
+    <div class="section-head"><div><h3>Waste monitoring</h3><p>Generated and collected quantities from your records</p></div><button class="btn secondary" onclick="showPage('records')">＋ Add record</button></div>
+    <div class="grid charts">
+      <div class="card chart-card"><div class="section-head" style="margin:0"><div><h3>Waste by colour category</h3><p>Total recorded quantity (kg)</p></div></div><div class="chart-wrap"><canvas id="categoryChart"></canvas></div><div class="legend"><span><i class="dot" style="background:#e7bd37"></i>Yellow</span><span><i class="dot" style="background:#e45b63"></i>Red</span><span><i class="dot" style="background:#8c9aa4"></i>White</span><span><i class="dot" style="background:#4d83c5"></i>Blue</span></div></div>
+      <div class="card chart-card"><h3 style="font-size:14px;margin:0">Collection status</h3><p style="font-size:11px;color:#81909a">Recorded waste collection progress</p><div class="chart-wrap"><canvas id="statusChart"></canvas></div><div class="legend"><span><i class="dot" style="background:#168b83"></i>Collected</span><span><i class="dot" style="background:#e8edf0"></i>Pending</span></div></div>
+    </div>
+    <div class="section-head"><div><h3>Recent records</h3><p>Your latest waste generation entries</p></div><button class="btn outline" onclick="showPage('records')">View all records</button></div>
+    <div class="card table-card"><div class="table-scroll"><table><thead><tr><th>Date</th><th>Category</th><th>Generated</th><th>Collected</th><th>Status</th></tr></thead><tbody id="recentRows"></tbody></table></div><div id="recentEmpty" class="empty">No records yet. Add your first daily waste entry.</div></div>
+  </section>
+
+  <section class="page" id="segregation">
+    <div class="welcome"><div><div class="eyebrow">Know the colour code</div><h2>Segregate correctly at the point of generation</h2><p>Biomedical waste must be separated into the correct colour-coded bags or containers. Never mix untreated biomedical waste with general waste.</p></div><div class="welcome-mark">🧤</div></div>
+    <div class="grid category-grid">
+      <div class="card category"><div class="category-band" style="background:#f0c83e"></div><div class="category-content"><span class="tag">CATEGORY 01</span><h3>Yellow</h3><small>Yellow non-chlorinated bag</small><p>Human or animal anatomical waste, soiled waste, certain discarded medicines, and specified chemical or laboratory waste.</p><span class="tag">Treatment depends on waste type</span></div></div>
+      <div class="card category"><div class="category-band" style="background:#e45b63"></div><div class="category-content"><span class="tag">CATEGORY 02</span><h3>Red</h3><small>Red non-chlorinated bag/container</small><p>Contaminated recyclable plastics such as tubing, IV sets, catheters, urine bags and gloves, as specified in the rules.</p><span class="tag">Authorised treatment & recycling</span></div></div>
+      <div class="card category"><div class="category-band" style="background:#9ba7ae"></div><div class="category-content"><span class="tag">CATEGORY 03</span><h3>White (Translucent)</h3><small>Puncture-proof, leak-proof, tamper-proof container</small><p>Waste sharps including needles, blades, scalpels and other contaminated metal sharps.</p><span class="tag">Sharps-specific treatment</span></div></div>
+      <div class="card category"><div class="category-band" style="background:#4d83c5"></div><div class="category-content"><span class="tag">CATEGORY 04</span><h3>Blue</h3><small>Blue-marked, suitable rigid container</small><p>Contaminated glassware, medicine vials and ampoules (with specified exclusions), and metallic body implants.</p><span class="tag">Disinfection / sterilisation as specified</span></div></div>
+    </div>
+    <div class="notice"><b>Important:</b> This is an educational summary of the Indian Biomedical Waste Management Rules, 2016 and amendments. Actual segregation must follow the latest applicable rules, CPCB/SPCB guidance, facility SOPs and authorised waste-handler instructions. Do not handle biomedical waste for practice.</div>
+  </section>
+
+  <section class="page" id="records">
+    <div class="section-head" style="margin-top:0"><div><h3>Daily waste register</h3><p>Enter sample or facility-authorised record data. Entries are stored in this browser.</p></div></div>
+    <div class="grid" style="grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);align-items:start">
+      <div class="card"><h3 style="font-size:14px;margin:0 0 16px">＋ Add a waste record</h3>
+        <form id="recordForm">
+          <div class="form-grid">
+            <div class="field"><label for="date">Date</label><input id="date" type="date" required></div>
+            <div class="field"><label for="category">Colour category</label><select id="category"><option value="Yellow">Yellow</option><option value="Red">Red</option><option value="White">White (Translucent)</option><option value="Blue">Blue</option></select></div>
+            <div class="field"><label for="generated">Generated quantity (kg)</label><input id="generated" type="number" min="0.01" step="0.01" placeholder="e.g. 2.50" required></div>
+            <div class="field"><label for="collected">Collected quantity (kg)</label><input id="collected" type="number" min="0" step="0.01" value="0" required></div>
+            <div class="field full"><label for="collector">Collection agency / notes</label><input id="collector" type="text" placeholder="Optional note"></div>
+          </div>
+          <div class="notice">Collected quantity cannot exceed generated quantity. Only enter collection details confirmed by the authorised facility.</div>
+          <div class="form-actions"><button class="btn" type="submit">Save record</button><button class="btn outline" type="reset">Clear</button></div>
+        </form>
+      </div>
+      <div><div class="card" style="margin-bottom:14px"><h3 style="font-size:14px;margin:0 0 6px">Record keeping checklist</h3><p style="font-size:11px;color:#71808c;line-height:1.6;margin:0">Track date of generation, waste category, quantity generated, date and quantity collected, and relevant collection details. Keep official records as required by applicable regulations.</p></div>
+      <div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><h3 style="font-size:14px;margin:0">Data tools</h3><button class="btn secondary" onclick="exportCSV()">Export CSV</button></div><p style="font-size:11px;color:#71808c">Download the entries as a spreadsheet-compatible CSV file.</p><button class="btn outline" onclick="clearRecords()">Clear browser demo data</button></div></div>
+    </div>
+    <div class="section-head"><div><h3>All entries</h3><p>Chronological waste generation and collection log</p></div></div>
+    <div class="card table-card"><div class="table-scroll"><table><thead><tr><th>Date</th><th>Category</th><th>Generated (kg)</th><th>Collected (kg)</th><th>Pending (kg)</th><th>Notes</th></tr></thead><tbody id="allRows"></tbody></table></div><div id="allEmpty" class="empty">No saved entries. Use the form to add a record.</div></div>
+  </section>
+
+  <section class="page" id="treatment">
+    <div class="welcome"><div><div class="eyebrow">Chemistry in action</div><h2>Waste treatment & disinfection</h2><p>Different waste streams require different validated treatment pathways. Treatment must be performed by trained, authorised personnel using approved systems.</p></div><div class="welcome-mark">⚗️</div></div>
+    <div class="grid info-grid">
+      <div class="card info-card"><div class="info-icon">🧪</div><h3>Chemical disinfection</h3><p>Uses an approved chemical disinfectant to reduce or inactivate microorganisms on specified waste or surfaces. Effectiveness depends on the material, concentration, contact time and validated procedure.</p><span class="tag">Chemistry: disinfectant action</span></div>
+      <div class="card info-card"><div class="info-icon">♨️</div><h3>Autoclaving</h3><p>A validated steam sterilisation process using controlled temperature, pressure and exposure time. It is used for applicable waste streams under prescribed procedures.</p><span class="tag">Science: moist heat</span></div>
+      <div class="card info-card"><div class="info-icon">🌡️</div><h3>Other approved treatment</h3><p>Depending on the category, rules may specify incineration, plasma pyrolysis, microwaving, hydroclaving, dry-heat treatment, shredding or other approved routes.</p><span class="tag">Process: category-specific</span></div>
+    </div>
+    <div class="notice"><b>Safety note:</b> This page is for awareness, not a treatment protocol. It intentionally does not provide chemical mixing ratios, operating settings or do-it-yourself sterilisation steps. Never mix chemicals or attempt to treat biomedical waste yourself. Follow the facility's validated SOP and authorised operator guidance.</div>
+    <div class="card"><h3 style="font-size:14px;margin:0 0 8px">Why correct treatment matters</h3><ul style="font-size:12px;color:#647482;line-height:1.8;padding-left:19px"><li>Reduces infection risks and protects waste handlers and the public.</li><li>Prevents untreated waste from entering ordinary waste streams.</li><li>Supports safe recycling of eligible materials after prescribed treatment.</li><li>Helps reduce environmental contamination when treatment and emissions controls are properly managed.</li></ul></div>
+  </section>
+
+  <section class="page" id="analytics">
+    <div class="section-head" style="margin-top:0"><div><h3>Waste analytics</h3><p>Visual summaries calculated from records saved in this browser</p></div><button class="btn secondary" onclick="exportCSV()">Export report data</button></div>
+    <div class="grid stats">
+      <div class="card"><div class="stat-label">Total generated</div><div class="stat-value" id="aGenerated">0.0 kg</div></div>
+      <div class="card"><div class="stat-label">Total collected</div><div class="stat-value" id="aCollected">0.0 kg</div></div>
+      <div class="card"><div class="stat-label">Collection rate</div><div class="stat-value" id="aRate">0%</div></div>
+      <div class="card"><div class="stat-label">Highest category</div><div class="stat-value" id="aHighest" style="font-size:21px">—</div></div>
+    </div>
+    <div class="grid charts"><div class="card chart-card"><h3 style="font-size:14px;margin:0">Generated vs collected by category</h3><div class="chart-wrap"><canvas id="analyticsChart"></canvas></div><div class="legend"><span><i class="dot" style="background:#168b83"></i>Generated</span><span><i class="dot" style="background:#9bcfc5"></i>Collected</span></div></div><div class="card chart-card"><h3 style="font-size:14px;margin:0">Category distribution</h3><div class="chart-wrap"><canvas id="analyticsDonut"></canvas></div><div class="legend" id="donutLegend"></div></div></div>
+  </section>
+
+  <section class="page" id="safety">
+    <div class="welcome"><div><div class="eyebrow">Protect people • Protect nature</div><h2>Health hazards & safety awareness</h2><p>Safe biomedical waste management starts with training, correct segregation, suitable protective equipment and authorised collection.</p></div><div class="welcome-mark">🛡️</div></div>
+    <div class="grid safety-grid">
+      <div class="card safety-item"><div class="info-icon">🦠</div><div><b>Infection exposure</b><p>Improperly managed infectious waste can expose workers and communities to harmful microorganisms.</p></div></div>
+      <div class="card safety-item"><div class="info-icon">⚠️</div><div><b>Sharps injuries</b><p>Needles and blades can cause injuries. Sharps belong in the designated puncture-proof container.</p></div></div>
+      <div class="card safety-item"><div class="info-icon">🌊</div><div><b>Water and soil pollution</b><p>Unsafe dumping or untreated discharge can contaminate the surrounding environment.</p></div></div>
+      <div class="card safety-item"><div class="info-icon">☣️</div><div><b>Chemical hazards</b><p>Some discarded chemicals and medicines require special handling to prevent exposure and pollution.</p></div></div>
+    </div>
+    <div class="section-head"><div><h3>Everyday safety principles</h3><p>General awareness for healthcare and support staff</p></div></div>
+    <div class="card"><ul style="font-size:12px;color:#647482;line-height:2;padding-left:20px"><li>Segregate waste immediately where it is generated.</li><li>Use the correct labelled colour-coded bag or container.</li><li>Never recap, bend or manually handle used needles; use the facility-approved sharps procedure.</li><li>Wear the personal protective equipment required by the facility.</li><li>Do not overfill bags or containers; follow approved closure and storage procedures.</li><li>Report spills, injuries or collection delays promptly through the facility's safety process.</li><li>Hand over waste only to authorised collection and treatment services.</li></ul></div>
+  </section>
+
+  <section class="page" id="smart">
+    <div class="welcome"><div><div class="eyebrow">Feature 01 • Smart assistant</div><h2>Find the correct waste category</h2><p>Upload a photo and let the AI detect the waste item, or search by name, to see an educational category suggestion and handling reminder.</p></div><div class="welcome-mark">✦</div></div>
+    <div class="card" id="aiCard" style="margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap">
+        <div><h3 style="font-size:15px;margin:0 0 4px;color:var(--navy)">📷 AI photo detection</h3><p style="font-size:12px;color:#647482;margin:0;line-height:1.6;max-width:640px">Upload or capture a photo of a waste item. The AI model finds the item and the page shows the matching colour category and handling guidance.</p></div>
+        <span class="tag">YOLO26 • Roboflow</span>
+      </div>
+      <div class="field" id="aiKeyRow" style="margin-top:14px"><label for="aiKey">Roboflow API key</label><input id="aiKey" type="password" autocomplete="off" placeholder="Paste your Roboflow API key once"><div class="ai-hint">Roboflow &rarr; Settings &rarr; API Keys. It is saved only in this browser.</div></div>
+      <div class="field" style="margin-top:12px"><label for="aiFile">Or choose a photo from your device</label><input id="aiFile" type="file" accept="image/*"></div>
+      <div class="form-actions" style="flex-wrap:wrap"><button class="btn" id="aiCamBtn" type="button">📷 Use camera</button><button class="btn outline" id="aiRun" type="button">Detect again</button></div>
+      <div class="ai-cam" id="aiCam" style="display:none"><video id="aiVideo" autoplay playsinline muted></video><div class="form-actions"><button class="btn" id="aiSnap" type="button">📸 Take photo &amp; analyse</button><button class="btn outline" id="aiCamClose" type="button" style="background:#fff">Close camera</button></div></div>
+      <div class="ai-stage" id="aiStage" style="display:none"><canvas id="aiCanvas" aria-label="Uploaded photo with detected items outlined"></canvas></div>
+      <div id="aiStatus" class="notice" aria-live="polite">Choose a photo to begin. Results are educational suggestions and must be checked against current rules and facility SOPs.</div>
+      <div id="aiResults" class="ai-results"></div>
+    </div>
+    <div class="card"><div class="field"><label for="wasteSearch">Enter a waste item</label><input id="wasteSearch" list="wasteOptions" placeholder="e.g. used IV tube, needle, medicine vial"><datalist id="wasteOptions"><option value="Used IV tube"><option value="Needle"><option value="Contaminated gloves"><option value="Medicine vial"><option value="Soiled dressing"><option value="Human anatomical waste"><option value="Glass ampoule"><option value="Scalpel blade"></datalist></div><button class="btn" style="margin-top:12px" onclick="classifyWaste()">Identify category</button><div id="smartResult" class="notice" aria-live="polite">Enter an item and select Identify category. Suggestions are educational and must be checked against current rules and facility SOPs.</div></div>
+    <div class="notice"><b>Important:</b> Some items have special exclusions or handling requirements. If an item is not recognised or its contamination status is uncertain, consult the facility's authorised waste officer.</div>
+  </section>
+  <section class="page" id="chemistry">
+    <div class="welcome"><div><div class="eyebrow">Feature 02 • Chemistry learning</div><h2>Treatment process simulator</h2><p>Explore the scientific principles behind common authorised biomedical-waste treatment methods.</p></div><div class="welcome-mark">⚗</div></div>
+    <div class="grid info-grid">
+      <div class="card info-card"><div class="info-icon">♨️</div><h3>Autoclaving</h3><p><b>Principle:</b> Moist heat denatures essential microbial proteins and damages cellular structures. Validated steam cycles are used for applicable waste streams.</p><span class="tag">Moist-heat treatment</span></div>
+      <div class="card info-card"><div class="info-icon">🧴</div><h3>Chemical disinfection</h3><p><b>Principle:</b> Approved disinfectants can disrupt cell membranes, oxidise cellular components or denature proteins. Effectiveness depends on the validated product and procedure.</p><span class="tag">Chemical reactions</span></div>
+      <div class="card info-card"><div class="info-icon">🔥</div><h3>Incineration</h3><p><b>Principle:</b> Controlled high-temperature oxidation converts suitable waste into gases and ash. It requires authorised equipment and emissions controls.</p><span class="tag">Combustion and oxidation</span></div>
+    </div>
+    <div class="card" style="margin-top:16px"><h3 style="font-size:14px">Explore a treatment method</h3><div class="field"><label for="treatmentSelect">Select process</label><select id="treatmentSelect" onchange="showTreatment()"><option value="steam">Autoclaving</option><option value="chemical">Chemical disinfection</option><option value="thermal">Incineration</option></select></div><div id="treatmentDetail" class="notice">Autoclaving uses moist heat to inactivate microorganisms in waste streams for which this treatment is approved.</div></div>
+    <div class="notice"><b>Safety boundary:</b> This simulator is for coursework only. It does not provide operating settings, chemical recipes or instructions to treat waste. Never attempt treatment yourself.</div>
+  </section>
+  <section class="page" id="phlab">
+    <div class="welcome"><div><div class="eyebrow">Feature 03 • Acids and bases</div><h2>Interactive pH awareness</h2><p>Learn how pH describes acidity and alkalinity and why chemical waste needs identification before authorised disposal.</p></div><div class="welcome-mark">🧪</div></div>
+    <div class="card"><h3 style="font-size:14px">Explore the pH scale</h3><div class="field"><label for="phValue">Select a pH value: <strong id="phNumber">7</strong></label><input id="phValue" type="range" min="0" max="14" step="1" value="7" oninput="updatePH()" style="width:100%;accent-color:#168b83"></div><div style="height:18px;border-radius:20px;background:linear-gradient(90deg,#d94b54,#ed9a52,#f3d45b,#8bcf8d,#4b9acb);margin:18px 0 10px"></div><div style="display:flex;justify-content:space-between;font-size:10px;color:#71808c"><span>0 • Acidic</span><span>7 • Neutral</span><span>14 • Basic</span></div><div id="phResult" class="notice" aria-live="polite">pH 7: Neutral. Pure water is commonly used as an introductory example.</div></div>
+    <div class="notice"><b>Waste safety:</b> pH alone does not determine whether a waste is safe or how it must be disposed of. Do not mix, neutralise or pour laboratory chemicals into drains based on this demonstration. Follow the approved chemical-waste procedure.</div>
+  </section>
+  <section class="page" id="chemguide">
+    <div class="welcome"><div><div class="eyebrow">Feature 04 • Chemical identification</div><h2>Chemical waste identification guide</h2><p>Review examples of chemical waste, their broad hazards and why compatibility checks matter.</p></div><div class="welcome-mark">🧪</div></div>
+    <div class="card"><div class="field"><label for="chemicalSelect">Choose a chemical waste type</label><select id="chemicalSelect" onchange="showChemical()"><option value="solvent">Organic solvents</option><option value="acid">Laboratory acids</option><option value="alkali">Laboratory alkalis</option><option value="reagent">Expired or unused reagents</option><option value="disinfectant">Used disinfectants</option></select></div><div id="chemicalDetail" class="notice">Organic solvents may be flammable or toxic. Keep waste streams identified and segregated according to the institution's chemical-waste SOP.</div></div>
+    <div class="notice"><b>Compatibility warning:</b> Never mix unknown chemicals or combine waste streams. Keep original labels or use approved labels, consult safety data sheets (SDS), and hand over to authorised handlers.</div>
+  </section>
+  <section class="page" id="environment">
+    <div class="welcome"><div><div class="eyebrow">Feature 05 • Environmental chemistry</div><h2>Waste generation impact explorer</h2><p>Explore how recorded waste quantities can be summarised and why poor handling can affect soil, water and air.</p></div><div class="welcome-mark">🌍</div></div>
+    <div class="grid stats"><div class="card"><div class="stat-label">Quantity entered</div><div class="stat-value" id="impactKg">0.00 kg</div><div class="stat-foot">Illustrative input only</div></div><div class="card"><div class="stat-label">Waste category</div><div class="stat-value" id="impactCat" style="font-size:21px">—</div><div class="stat-foot">Selected category</div></div></div>
+    <div class="card"><div class="form-grid"><div class="field"><label for="impactCategory">Waste category</label><select id="impactCategory"><option>Yellow</option><option>Red</option><option>White</option><option>Blue</option></select></div><div class="field"><label for="impactQuantity">Quantity (kg)</label><input id="impactQuantity" type="number" min="0" step="0.01" placeholder="Enter quantity"></div></div><button class="btn" style="margin-top:14px" onclick="calculateImpact()">Explore impact</button><div id="impactResult" class="notice" aria-live="polite">Enter a quantity to view relevant environmental considerations.</div></div>
+    <div class="grid info-grid" style="margin-top:16px"><div class="card info-card"><div class="info-icon">💧</div><h3>Water</h3><p>Improper disposal of chemicals or untreated waste can contaminate surface water and groundwater.</p></div><div class="card info-card"><div class="info-icon">🌱</div><h3>Soil</h3><p>Unsafe dumping can introduce persistent chemicals, pharmaceuticals and infectious material into soil.</p></div><div class="card info-card"><div class="info-icon">🌫️</div><h3>Air</h3><p>Inappropriate burning can release harmful pollutants. Approved treatment requires suitable emission controls.</p></div></div>
+    <div class="notice"><b>Interpretation:</b> This is an educational impact explorer, not a measured pollution or carbon-footprint calculator. It does not assign invented emission factors or claim that a specific quantity causes a measured level of pollution.</div>
+  </section>
+  <div class="footer">BioSafe • Educational project prototype • Follow current official rules and your institution's authorised procedures.</div>
+</main>
+</div>
+<script>
+
+const portalScreen=document.getElementById('portalScreen');
+function enterBioSafe(){
+  portalScreen.classList.add('hidden');
+  document.body.style.overflow='auto';
+  showPage('dashboard');
+}
+document.getElementById('portalLogin').addEventListener('submit',function(e){
+  e.preventDefault();
+  // Demo-only entrance: this prototype does not authenticate credentials.
+  enterBioSafe();
+});
+document.getElementById('guestAccess').addEventListener('click',enterBioSafe);
+document.body.style.overflow='hidden';
+
+
+const KEY='biosafe_records_v1';
+let records=[];try{records=JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){records=[]}
+const cats=['Yellow','Red','White','Blue'],colors={Yellow:'#e7bd37',Red:'#e45b63',White:'#8c9aa4',Blue:'#4d83c5'};
+const today=new Date();document.getElementById('today').textContent=today.toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'});document.getElementById('date').value=today.toISOString().slice(0,10);
+function save(){localStorage.setItem(KEY,JSON.stringify(records));render()}
+function totals(){let g=0,c=0;records.forEach(r=>{g+=r.generated;c+=r.collected});return {g,c,p:Math.max(0,g-c)}}
+function byCat(){return cats.map(cat=>({cat,g:records.filter(r=>r.category===cat).reduce((s,r)=>s+r.generated,0),c:records.filter(r=>r.category===cat).reduce((s,r)=>s+r.collected,0)}))}
+function fmt(n){return Number(n||0).toFixed(2)}
+function pill(cat){return `<span class="pill ${cat.toLowerCase()}">${cat}</span>`}
+function render(){
+ const t=totals(),b=byCat();['totalGenerated','aGenerated'].forEach(id=>document.getElementById(id).textContent=fmt(t.g)+' kg');['totalCollected','aCollected'].forEach(id=>document.getElementById(id).textContent=fmt(t.c)+' kg');
+ document.getElementById('pending').textContent=fmt(t.p)+' kg';document.getElementById('entryCount').textContent=records.length;document.getElementById('aRate').textContent=(t.g?Math.round(t.c/t.g*100):0)+'%';
+ const highest=[...b].sort((x,y)=>y.g-x.g)[0];document.getElementById('aHighest').textContent=highest&&highest.g?highest.cat:'—';
+ const rows=[...records].sort((a,b)=>b.date.localeCompare(a.date));
+ document.getElementById('recentRows').innerHTML=rows.slice(0,5).map(r=>`<tr><td>${r.date}</td><td>${pill(r.category)}</td><td>${fmt(r.generated)} kg</td><td>${fmt(r.collected)} kg</td><td>${r.collected>=r.generated?'<span class="tag">Collected</span>':'<span class="tag">Pending</span>'}</td></tr>`).join('');
+ document.getElementById('recentEmpty').style.display=rows.length?'none':'block';
+ document.getElementById('allRows').innerHTML=rows.map(r=>`<tr><td>${r.date}</td><td>${pill(r.category)}</td><td>${fmt(r.generated)}</td><td>${fmt(r.collected)}</td><td>${fmt(r.generated-r.collected)}</td><td>${escapeHtml(r.note||'—')}</td></tr>`).join('');
+ document.getElementById('allEmpty').style.display=rows.length?'none':'block';
+ drawBar('categoryChart',b.map(x=>({label:x.cat,value:x.g,color:colors[x.cat]})));
+ drawDonut('statusChart',[{label:'Collected',value:t.c,color:'#168b83'},{label:'Pending',value:t.p,color:'#e8edf0'}]);
+ drawGrouped('analyticsChart',b);drawDonut('analyticsDonut',b.map(x=>({label:x.cat,value:x.g,color:colors[x.cat]})));
+ document.getElementById('donutLegend').innerHTML=b.map(x=>`<span><i class="dot" style="background:${colors[x.cat]}"></i>${x.cat}</span>`).join('');
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function canvasSetup(id){const c=document.getElementById(id),rect=c.getBoundingClientRect(),dpr=window.devicePixelRatio||1;c.width=Math.max(280,rect.width)*dpr;c.height=Math.max(160,rect.height)*dpr;const x=c.getContext('2d');x.scale(dpr,dpr);return {x,w:c.width/dpr,h:c.height/dpr}}
+function drawBar(id,data){const {x,w,h}=canvasSetup(id);x.clearRect(0,0,w,h);let max=Math.max(1,...data.map(d=>d.value));const left=28,bottom=28,top=12,usable=h-top-bottom;for(let i=0;i<4;i++){let y=top+usable*i/3;x.strokeStyle='#edf1f3';x.beginPath();x.moveTo(left,y);x.lineTo(w-8,y);x.stroke()}let slot=(w-left-12)/4;data.forEach((d,i)=>{let bh=d.value/max*(usable-5),bw=Math.min(34,slot*.48),cx=left+slot*i+slot/2;x.fillStyle=d.color;x.beginPath();x.roundRect(cx-bw/2,top+usable-bh,bw,bh,5);x.fill();x.fillStyle='#71808c';x.font='10px system-ui';x.textAlign='center';x.fillText(d.label,cx,h-8);if(d.value){x.fillStyle='#405467';x.fillText(fmt(d.value),cx,top+usable-bh-5)}})}
+function drawDonut(id,data){const {x,w,h}=canvasSetup(id);x.clearRect(0,0,w,h);let total=data.reduce((s,d)=>s+d.value,0),cx=w/2,cy=h/2-3,r=Math.min(w*.27,h*.38),inner=r*.62,start=-Math.PI/2;if(!total){x.strokeStyle='#e9eef0';x.lineWidth=r-inner;x.beginPath();x.arc(cx,cy,r-(r-inner)/2,0,Math.PI*2);x.stroke();x.fillStyle='#82919b';x.textAlign='center';x.font='11px system-ui';x.fillText('No data yet',cx,cy+4);return}data.forEach(d=>{let a=d.value/total*Math.PI*2;x.beginPath();x.arc(cx,cy,r,start,start+a);x.arc(cx,cy,inner,start+a,start,true);x.closePath();x.fillStyle=d.color;x.fill();start+=a});x.fillStyle='#17324d';x.textAlign='center';x.font='bold 17px system-ui';x.fillText(fmt(total),cx,cy+1);x.font='10px system-ui';x.fillStyle='#82919b';x.fillText('kg total',cx,cy+17)}
+function drawGrouped(id,data){const {x,w,h}=canvasSetup(id);x.clearRect(0,0,w,h);let max=Math.max(1,...data.flatMap(d=>[d.g,d.c])),left=28,top=12,bottom=28,usable=h-top-bottom,slot=(w-left-10)/4;for(let i=0;i<4;i++){let y=top+usable*i/3;x.strokeStyle='#edf1f3';x.beginPath();x.moveTo(left,y);x.lineTo(w-8,y);x.stroke()}data.forEach((d,i)=>{let cx=left+slot*i+slot/2,bw=Math.min(18,slot*.25),a=d.g/max*(usable-5),b=d.c/max*(usable-5);x.fillStyle='#168b83';x.fillRect(cx-bw-2,top+usable-a,bw,a);x.fillStyle='#9bcfc5';x.fillRect(cx+2,top+usable-b,bw,b);x.fillStyle='#71808c';x.font='10px system-ui';x.textAlign='center';x.fillText(d.cat,cx,h-8)})}
+document.getElementById('recordForm').addEventListener('submit',e=>{e.preventDefault();let g=Number(document.getElementById('generated').value),c=Number(document.getElementById('collected').value);if(!Number.isFinite(g)||g<=0||!Number.isFinite(c)||c<0||c>g){alert('Enter a generated quantity above 0 and a collected quantity between 0 and the generated quantity.');return}records.push({id:Date.now(),date:document.getElementById('date').value,category:document.getElementById('category').value,generated:g,collected:c,note:document.getElementById('collector').value.trim()});e.target.reset();document.getElementById('date').value=today.toISOString().slice(0,10);save()});
+function exportCSV(){if(!records.length){alert('There are no records to export yet.');return}let lines=[['Date','Category','Generated (kg)','Collected (kg)','Pending (kg)','Notes'],...records.map(r=>[r.date,r.category,r.generated,r.collected,(r.generated-r.collected).toFixed(2),r.note||''])];let csv=lines.map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\r\n');let blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='biosafe-waste-records.csv';a.click();URL.revokeObjectURL(url)}
+function clearRecords(){if(confirm('Delete all demo records saved in this browser?')){records=[];save()}}
+const titles={dashboard:'Dashboard overview',segregation:'Waste segregation guide',records:'Daily waste records',treatment:'Treatment & disinfection',analytics:'Waste analytics',safety:'Health & safety',smart:'Smart segregation assistant',chemistry:'Treatment process simulator',phlab:'pH awareness lab',chemguide:'Chemical waste identification',environment:'Environmental impact explorer'};
+function showPage(name){document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===name));document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===name));document.getElementById('pageTitle').textContent=titles[name];setTimeout(render,30);window.scrollTo(0,0)}
+document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
+
+const wasteMap=[
+ {keys:['used iv tube','iv set','catheter','urine bag','contaminated glove','gloves'],cat:'Red',detail:'Contaminated recyclable plastic item. Use the designated red non-chlorinated bag/container where the rules specify.'},
+ {keys:['needle','scalpel','blade','sharp'],cat:'White (Translucent)',detail:'Waste sharps. Use the designated puncture-proof, leak-proof and tamper-proof white translucent container.'},
+ {keys:['vial','ampoule','glass'],cat:'Blue',detail:'Specified contaminated glassware or medicine vial/ampoule. Check exclusions and use the prescribed blue-marked container.'},
+ {keys:['soiled dressing','bandage','cotton','anatomical'],cat:'Yellow',detail:'Specified soiled or anatomical waste. Use the prescribed yellow non-chlorinated bag.'}
+];
+function classifyWaste(){const q=document.getElementById('wasteSearch').value.trim().toLowerCase();const hit=wasteMap.find(x=>x.keys.some(k=>q.includes(k)));const el=document.getElementById('smartResult');el.innerHTML=hit?'<b>Suggested category: '+escapeHtml(hit.cat)+'</b><br>'+escapeHtml(hit.detail)+'<br><small>Verify the exact item, contamination status and current facility SOP before disposal.</small>':'<b>No confident match found.</b><br>Check the facility waste chart or ask the authorised waste officer. Do not guess the category.';}
+function showTreatment(){const d={steam:'Autoclaving uses moist heat. Heat causes protein denaturation and damages microbial structures in applicable waste streams.',chemical:'Chemical disinfection relies on approved agents that may oxidise cellular components, disrupt membranes or denature proteins. Effectiveness depends on a validated procedure.',thermal:'Incineration is controlled oxidation of suitable waste. It must use authorised facilities and appropriate air-pollution controls.'};document.getElementById('treatmentDetail').textContent=d[document.getElementById('treatmentSelect').value];}
+function updatePH(){const v=Number(document.getElementById('phValue').value);document.getElementById('phNumber').textContent=v;let t=v<7?'Acidic':v>7?'Basic (alkaline)':'Neutral';document.getElementById('phResult').textContent='pH '+v+': '+t+'. This is a simplified learning model; pH does not by itself determine chemical-waste disposal requirements.';}
+function showChemical(){const d={solvent:'Organic solvents may be flammable, volatile or toxic. Keep solvent waste identified and segregated according to the institution SOP and SDS.',acid:'Laboratory acids can be corrosive and may react dangerously with incompatible materials. Keep containers labelled and use the authorised hazardous-waste route.',alkali:'Laboratory alkalis can cause chemical burns and may react with other waste. Keep them identified and segregated under the approved procedure.',reagent:'Expired or unused reagents may have different hazards and incompatibilities. Retain identity information and consult the SDS and authorised waste handler.',disinfectant:'Used or expired disinfectants can have chemical hazards and must not be mixed with other products. Follow product guidance and the facility disposal procedure.'};document.getElementById('chemicalDetail').textContent=d[document.getElementById('chemicalSelect').value];}
+function calculateImpact(){const q=Number(document.getElementById('impactQuantity').value),cat=document.getElementById('impactCategory').value;if(!Number.isFinite(q)||q<=0){document.getElementById('impactResult').textContent='Enter a quantity greater than zero.';return;}document.getElementById('impactKg').textContent=fmt(q)+' kg';document.getElementById('impactCat').textContent=cat;const notes={Yellow:'Some yellow-category waste may present infection, pharmaceutical or chemical risks if handled incorrectly.',Red:'Eligible contaminated plastics require prescribed treatment before authorised recycling or disposal.',White:'Sharps can cause injury and expose people to infection; secure sharps containment is essential.',Blue:'Specified glassware and implants require the prescribed disinfection or sterilisation route.'};document.getElementById('impactResult').textContent=q.toFixed(2)+' kg of '+cat+' category waste recorded for this learning example. '+notes[cat]+' Quantity alone does not measure pollution; environmental risk depends on waste composition, handling and treatment.';}
+
+/* ===== AI photo detection (Roboflow Cloud API) ===== */
+const AI_ENDPOINT='https://serverless.roboflow.com/samhithas-workspace-nzdmj/workflows/biomedical-waste-detection-nv7fq-bpeeu-zfv7l-2-yolo26s-t1-vbiomedical-waste-detection-nv7fq-bpeeu-zfv7l-2-yolo26s-t1-logic';
+const AI_API_KEY='';          // Optional: paste your Roboflow key between the quotes. If left empty, the key is typed into the page instead.
+const AI_MIN_CONF=0.5;        // detections below 50% confidence are ignored
+const AI_MAX_SIDE=1024;       // photos are shrunk to this size before upload (faster, cheaper)
+const AI_KEY_STORE='biosafe_roboflow_key';
+const aiColors={Yellow:'#e7bd37',Red:'#e45b63',White:'#8c9aa4',Blue:'#4d83c5',General:'#168b83'};
+/* Educational guidance based on the Indian Biomedical Waste Management Rules, 2016. Verify against the current rules and facility SOP. */
+const aiGuide={
+ 'used syringe':{name:'Used syringe',cat:'White',bin:'White (translucent) puncture-proof, leak-proof, tamper-proof container',text:'A syringe with a fixed needle is a waste sharp. Never recap, bend or break the needle; place it straight into the sharps container.',alt:'If the needle has already been removed by the facility-approved method, the plastic syringe goes in the red bag.'},
+ 'needle':{name:'Needle',cat:'White',bin:'White (translucent) puncture-proof, leak-proof, tamper-proof container',text:'Needles are waste sharps. Never recap, bend or break them. Drop them directly into the sharps container at the point of use.',alt:'Never push down on or reach into a sharps container.'},
+ 'needle cap':{name:'Needle cap',cat:'Red',bin:'Red non-chlorinated bag',text:'Plastic needle caps are contaminated recyclable plastic and usually go in the red bag.',alt:'Practice can differ between facilities, so confirm with your SOP. The needle itself goes only in the white sharps container.'},
+ 'glove':{name:'Glove',cat:'Red',bin:'Red non-chlorinated bag',text:'Used gloves are contaminated recyclable plastic. Place them in the red bag at the point of generation.',alt:'Do not put used gloves in general waste.'},
+ 'mask':{name:'Mask',cat:'Yellow',bin:'Yellow non-chlorinated bag',text:'Masks soiled with blood or body fluids are soiled waste and go in the yellow bag.',alt:'Handling of routine used masks differs between facilities, so check your SOP.'},
+ 'gauze':{name:'Gauze',cat:'Yellow',bin:'Yellow non-chlorinated bag',text:'Gauze soiled with blood or body fluids is soiled waste. Place it in the yellow bag, never in general waste.',alt:''},
+ 'unused gauze':{name:'Unused gauze',cat:'General',bin:'No biomedical bag needed',text:'Clean, unused gauze has not been contaminated, so it is not biomedical waste.',alt:'Keep it for use. If it becomes soiled, it goes in the yellow bag.'},
+ 'glass':{name:'Glass',cat:'Blue',bin:'Blue-marked puncture-proof container',text:'Broken or discarded contaminated glass, including medicine vials and ampoules, goes in the blue container.',alt:'Glass contaminated with cytotoxic drugs follows a separate route under the rules. Never pick up broken glass by hand.'},
+ 'test tube':{name:'Test tube',cat:'Blue',bin:'Blue-marked puncture-proof container',text:'Glass test tubes are glassware and go in the blue container.',alt:'Plastic test tubes contaminated with blood or body fluids go in the red bag. Follow the lab SOP for any liquid contents.'},
+ 'tube':{name:'Tube',cat:'Red',bin:'Red non-chlorinated bag',text:'Used tubing such as IV sets, catheters and drainage tubes is contaminated recyclable plastic. Place it in the red bag.',alt:''},
+ 'fluid bottle':{name:'Fluid bottle',cat:'Red',bin:'Red non-chlorinated bag',text:'Used plastic IV or fluid bottles, with their tubing, are contaminated recyclable plastic and go in the red bag.',alt:'Glass fluid bottles go in the blue container instead. Empty, uncontaminated bottles follow the facility recycling route.'},
+ 'plastic':{name:'Plastic',cat:'Red',bin:'Red bag if contaminated; otherwise general recyclable waste',text:'Plastic items that have touched blood or body fluids go in the red bag.',alt:'Clean, uncontaminated plastic is not biomedical waste and follows the general or recycling route.'},
+ 'paper':{name:'Paper',cat:'General',bin:'General waste (dry)',text:'Paper is general waste unless it is soiled with blood or body fluids.',alt:'If soiled, treat it as soiled waste and use the yellow bag.'},
+ 'scrub':{name:'Scrub',cat:'Yellow',bin:'Yellow non-chlorinated bag (if soiled)',text:'Scrub items soiled with blood or body fluids are soiled waste and go in the yellow bag.',alt:'Clean items are not biomedical waste. If you are unsure what the item is, ask the authorised waste officer.'}
+};
+let aiImage=null,aiBusy=false;
+function aiNorm(s){return String(s).toLowerCase().replace(/[_\-]+/g,' ').replace(/\s+/g,' ').trim()}
+function aiStatus(html){document.getElementById('aiStatus').innerHTML=html}
+function aiLoadImage(file){return new Promise((resolve,reject)=>{const url=URL.createObjectURL(file),img=new Image();img.onload=()=>{URL.revokeObjectURL(url);resolve(img)};img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error('That file could not be read as an image.'))};img.src=url})}
+function aiDrawBase(){const cv=document.getElementById('aiCanvas'),s=Math.min(1,AI_MAX_SIDE/Math.max(aiImage.naturalWidth,aiImage.naturalHeight));cv.width=Math.max(1,Math.round(aiImage.naturalWidth*s));cv.height=Math.max(1,Math.round(aiImage.naturalHeight*s));cv.getContext('2d').drawImage(aiImage,0,0,cv.width,cv.height);return cv}
+/* Roboflow workflows nest predictions inside "outputs"; search the whole reply for objects that have a class and a confidence. */
+function aiCollect(node,out,seen,depth){
+ if(!node||typeof node!=='object'||depth>10)return;
+ if(Array.isArray(node)){node.forEach(n=>aiCollect(n,out,seen,depth+1));return}
+ const cls=node.class!==undefined?node.class:node.class_name;
+ if(typeof cls==='string'&&typeof node.confidence==='number'){
+  const key=node.detection_id||[cls,Math.round(node.x||0),Math.round(node.y||0),Math.round(node.width||0),Math.round(node.height||0)].join('|');
+  if(!seen.has(key)){seen.add(key);node.__cls=cls;out.push(node)}
+ }
+ Object.keys(node).forEach(k=>{const v=node[k];if(v&&typeof v==='object')aiCollect(v,out,seen,depth+1)});
+}
+function aiFindDims(node,depth){
+ if(!node||typeof node!=='object'||depth>10)return null;
+ if(node.image&&typeof node.image==='object'&&typeof node.image.width==='number'&&typeof node.image.height==='number')return node.image;
+ for(const k of Object.keys(node)){const r=aiFindDims(node[k],depth+1);if(r)return r}
+ return null;
+}
+function aiDrawBoxes(cv,dets,scale){
+ const x=cv.getContext('2d'),fs=Math.max(12,Math.round(cv.width/45)),pad=4;
+ x.lineWidth=Math.max(2,Math.round(cv.width/300));x.font='bold '+fs+'px system-ui,sans-serif';x.textBaseline='top';
+ dets.forEach(d=>{
+  if(typeof d.x!=='number'||typeof d.y!=='number'||typeof d.width!=='number'||typeof d.height!=='number')return;
+  const g=aiGuide[aiNorm(d.__cls)],col=aiColors[g?g.cat:'General'],w=d.width*scale,h=d.height*scale,left=d.x*scale-w/2,top=d.y*scale-h/2;
+  x.strokeStyle=col;x.strokeRect(left,top,w,h);
+  const label=aiNorm(d.__cls)+' '+Math.round(d.confidence*100)+'%',tw=x.measureText(label).width+pad*2,boxH=fs+pad*2,ty=top-boxH>=0?top-boxH:top;
+  x.fillStyle=col;x.fillRect(left,ty,tw,boxH);x.fillStyle=(g&&g.cat==='Yellow')?'#1f2937':'#ffffff';x.fillText(label,left+pad,ty+pad);
+ });
+}
+function aiRender(dets){
+ const best={},count={};
+ dets.forEach(d=>{const k=aiNorm(d.__cls);count[k]=(count[k]||0)+1;if(!best[k]||d.confidence>best[k].confidence)best[k]=d});
+ const items=Object.keys(best).map(k=>({k,d:best[k]})).sort((a,b)=>b.d.confidence-a.d.confidence);
+ document.getElementById('aiResults').innerHTML=items.map(({k,d})=>{
+  const g=aiGuide[k],pct=Math.round(d.confidence*100);
+  if(!g)return '<div class="ai-item" style="border-left-color:#9aa8b2"><div class="ai-head"><b>'+escapeHtml(k)+'</b><span class="tag">'+pct+'% confidence</span></div><p>No disposal guidance is stored for this item yet. Check the facility waste chart or ask the authorised waste officer.</p></div>';
+  const label=g.cat==='General'?'General waste':g.cat;
+  return '<div class="ai-item" style="border-left-color:'+aiColors[g.cat]+'"><div class="ai-head"><b>'+escapeHtml(g.name)+(count[k]>1?' &times; '+count[k]:'')+'</b><span class="pill '+g.cat.toLowerCase()+'">'+label+'</span><span class="tag">'+pct+'% confidence</span></div><div class="ai-bin"><b>Where it goes:</b> '+escapeHtml(g.bin)+'</div><p>'+escapeHtml(g.text)+'</p>'+(g.alt?'<p class="ai-alt">'+escapeHtml(g.alt)+'</p>':'')+'</div>';
+ }).join('')+'<div class="ai-hint">Educational guidance based on the Indian Biomedical Waste Management Rules, 2016. Always confirm the item, whether it is contaminated, and your facility SOP before disposal.</div>';
+}
+async function aiDetect(){
+ if(aiBusy)return;
+ const btn=document.getElementById('aiRun'),resultsEl=document.getElementById('aiResults');
+ if(!aiImage){aiStatus('<b>Choose a photo first.</b>');return}
+ const key=(AI_API_KEY||document.getElementById('aiKey').value||'').trim();
+ if(!key){aiStatus('<b>Enter your Roboflow API key above</b> (Roboflow &rarr; Settings &rarr; API Keys), then press the button again.');document.getElementById('aiKey').focus();return}
+ if(!AI_API_KEY){try{localStorage.setItem(AI_KEY_STORE,key)}catch(e){}}
+ aiBusy=true;btn.disabled=true;resultsEl.innerHTML='';aiStatus('Analysing the photo...');
+ try{
+  const cv=aiDrawBase(),b64=cv.toDataURL('image/jpeg',0.9).split(',')[1];
+  const res=await fetch(AI_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({inputs:{image:{type:'base64',value:b64}}})});
+  if(!res.ok){
+   let body='';try{body=(await res.text()).slice(0,200)}catch(e){}
+   let msg='Roboflow returned an error ('+res.status+').';
+   if(res.status===401||res.status===403)msg='Roboflow rejected the API key. Copy it again from Roboflow &rarr; Settings &rarr; API Keys.';
+   else if(res.status===404)msg='Roboflow could not find the workflow. Check the web address in the page code.';
+   else if(res.status===402||res.status===429)msg='Roboflow credits or the rate limit have been used up for now.';
+   throw new Error(msg+(body?'<br><small>'+escapeHtml(body)+'</small>':''));
+  }
+  const data=await res.json(),all=[],seen=new Set();
+  aiCollect(data,all,seen,0);
+  const dims=aiFindDims(data,0),scale=dims&&dims.width?cv.width/dims.width:1,dets=all.filter(d=>d.confidence>=AI_MIN_CONF);
+  aiDrawBoxes(cv,dets,scale);
+  if(!dets.length){aiStatus('<b>No waste item detected with at least '+Math.round(AI_MIN_CONF*100)+'% confidence.</b><br>Try a clearer, closer photo with a plain background. If the item is uncertain, ask the authorised waste officer. Do not guess the category.');return}
+  const n=new Set(dets.map(d=>aiNorm(d.__cls))).size;
+  aiStatus('<b>'+dets.length+' detection'+(dets.length>1?'s':'')+' across '+n+' item type'+(n>1?'s':'')+'.</b> Guidance is shown below.');
+  aiRender(dets);
+ }catch(err){
+  const offline=err instanceof TypeError;
+  aiStatus('<b>Detection failed.</b><br>'+(offline?'Could not reach Roboflow. Check your internet connection and try again.':err.message));
+ }finally{aiBusy=false;btn.disabled=false}
+}
+let aiStream=null;
+async function aiCamOpen(){
+ if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){aiStatus('<b>This browser cannot open the camera here.</b> Use the file chooser instead; on a phone it offers the camera too.');return}
+ try{
+  aiCamClose();
+  aiStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720}},audio:false});
+  const v=document.getElementById('aiVideo');v.srcObject=aiStream;try{await v.play()}catch(e){}
+  document.getElementById('aiCam').style.display='block';
+  aiStatus('Point the camera at the waste item, then press <b>Take photo &amp; analyse</b>.');
+ }catch(e){
+  let msg='The camera could not be opened.';
+  if(e&&(e.name==='NotAllowedError'||e.name==='SecurityError'))msg='Camera permission was blocked. Click the camera or lock icon in the address bar, choose Allow, then press <b>Use camera</b> again.';
+  else if(e&&(e.name==='NotFoundError'||e.name==='OverconstrainedError'))msg='No camera was found on this device.';
+  else if(e&&e.name==='NotReadableError')msg='The camera is being used by another app. Close it and try again.';
+  aiStatus('<b>'+msg+'</b>');
+ }
+}
+function aiCamClose(){
+ if(aiStream){aiStream.getTracks().forEach(t=>t.stop());aiStream=null}
+ const v=document.getElementById('aiVideo');if(v)v.srcObject=null;
+ const c=document.getElementById('aiCam');if(c)c.style.display='none';
+}
+async function aiSnap(){
+ const v=document.getElementById('aiVideo');
+ if(!v.videoWidth){aiStatus('The camera is still starting. Wait a second and try again.');return}
+ const c=document.createElement('canvas');c.width=v.videoWidth;c.height=v.videoHeight;c.getContext('2d').drawImage(v,0,0);
+ const img=new Image();
+ await new Promise(res=>{img.onload=res;img.src=c.toDataURL('image/jpeg',0.92)});
+ aiImage=img;aiCamClose();
+ document.getElementById('aiStage').style.display='block';aiDrawBase();document.getElementById('aiResults').innerHTML='';
+ aiDetect();
+}
+(function(){
+ const fileEl=document.getElementById('aiFile'),keyEl=document.getElementById('aiKey'),btn=document.getElementById('aiRun');
+ try{const k=localStorage.getItem(AI_KEY_STORE);if(k)keyEl.value=k}catch(e){}
+ if(AI_API_KEY)document.getElementById('aiKeyRow').style.display='none';
+ fileEl.addEventListener('change',async()=>{
+  const f=fileEl.files&&fileEl.files[0];if(!f)return;
+  try{aiImage=await aiLoadImage(f)}catch(e){aiStatus('<b>'+escapeHtml(e.message)+'</b>');return}
+  document.getElementById('aiStage').style.display='block';aiDrawBase();document.getElementById('aiResults').innerHTML='';aiDetect();
+ });
+ btn.addEventListener('click',aiDetect);
+ document.getElementById('aiCamBtn').addEventListener('click',aiCamOpen);
+ document.getElementById('aiSnap').addEventListener('click',aiSnap);
+ document.getElementById('aiCamClose').addEventListener('click',aiCamClose);
+ document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',aiCamClose));
+})();
+
+window.addEventListener('resize',()=>render());render();
+</script>
+</body>
+</html>

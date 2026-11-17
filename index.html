@@ -941,11 +941,11 @@ async function aiDetect() {
     const all = Array.isArray(data.predictions) ? data.predictions : [];
     const scale = (data.image && data.image.width) ? cv.width / data.image.width : 1;
     const rawDets = all.filter(d => d.confidence >= AI_MIN_CONF);
-const generic = new Set(['plastic', 'paper']);
-const specific = rawDets.filter(d => !generic.has(aiNorm(d.class || d.class_name || '')));
-const pool = specific.length ? specific : rawDets;
-const topDet = [...pool].sort((a, b) => b.confidence - a.confidence)[0];
-const dets = topDet ? [topDet] : [];
+    const generic = new Set(['plastic', 'paper']);
+    const specific = rawDets.filter(d => !generic.has(aiNorm(d.class || d.class_name || '')));
+    const pool = specific.length ? specific : rawDets;
+    const topDet = [...pool].sort((a, b) => b.confidence - a.confidence)[0];
+    const dets = topDet ? [topDet] : [];
 
     aiDrawBoxes(cv, dets, scale);
 

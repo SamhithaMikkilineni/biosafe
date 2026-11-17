@@ -638,7 +638,7 @@ function calculateImpact() {
 
 /* ===== FIXED AI photo detection (Roboflow Hosted Inference API) ===== */
 const AI_API_KEY = ''; // Optional: paste your Roboflow key between the quotes, or enter it in the UI box.
-const AI_MIN_CONF = 0.4; // Detections below 40% confidence are ignored
+const AI_MIN_CONF = 0.15; // Detections below 40% confidence are ignored
 const AI_MAX_SIDE = 1024;
 const AI_KEY_STORE = 'biosafe_roboflow_key';
 const AI_MODEL_STORE = 'biosafe_roboflow_model';
@@ -709,7 +709,7 @@ async function detectWaste(imageFileOrCanvas, apiKey, modelId, version) {
   }
 
   // 2. Call Roboflow Hosted Inference API (CORS-safe endpoint)
-  const url = `https://detect.roboflow.com/${encodeURIComponent(MODEL_ID)}/${encodeURIComponent(VERSION)}?api_key=${encodeURIComponent(apiKey.trim())}`;
+  const url = `https://detect.roboflow.com/${encodeURIComponent(MODEL_ID)}/${encodeURIComponent(VERSION)}?api_key=${encodeURIComponent(apiKey.trim())}&confidence=15`;
 
   const response = await fetch(url, {
     method: "POST",

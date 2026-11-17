@@ -699,7 +699,7 @@ function calculateImpact() {
 
 /* ===== HYBRID AI PHOTO DETECTION (Roboflow + Gemini Vision Fallback) ===== */
 const AI_API_KEY = '';
-const GEMINI_API_KEY = 'AQ.Ab8RN6LgLSZcEm23tolhCwx2jCxWsJFGilWK9TOpq4pdOeP-HQ'; // Optional: paste Gemini API key here, or enter it in the UI
+const GEMINI_API_KEY = ''; // Optional: paste Gemini API key here, or enter it in the UI
 const AI_MIN_CONF = 0.15;
 const GEMINI_FALLBACK_THRESHOLD = 1.01; // Triggers Gemini Vision whenever Roboflow confidence is below 75%
 const AI_MAX_SIDE = 1024;
@@ -855,15 +855,15 @@ async function detectWaste(imageFileOrCanvas, apiKey, modelId, version, geminiKe
     try {
       const imgW = (roboflowData.image && roboflowData.image.width) || cw;
       const imgH = (roboflowData.image && roboflowData.image.height) || ch;
-      const verifiedPreds = await verifyWithGeminiVision(base64Image, geminiKey, preds, imgW, imgH);
+      const verifiedPreds = await verifyWithGeminiVision(base64Image, geminiKey, [], imgW, imgH);
       return {
         predictions: verifiedPreds,
         image: { width: imgW, height: imgH },
         usedFallback: true
       };
-    } catch (gemErr) {
-      console.warn("Gemini Vision fallback failed, using Roboflow result:", gemErr);
-    }
+      } catch (gemErr) {
+        throw new Error("Gemini Vision failed: " + gemErr.message);
+      }
   }
 
   return roboflowData;

@@ -758,36 +758,27 @@ async function callGeminiAPI(apiKey, bodyObj) {
     'x-goog-api-key': apiKey.trim()
   };
   const payload = JSON.stringify(bodyObj);
-  const modelsToTry = ['gemini-3.5-flash-lite', 'gemini-1.5-flash', 'gemini-flash-latest'];
+  const modelsToTry = ['gemini-1.5-flash', 'gemini-flash-latest', 'gemini-1.5-pro'];
   let res = null;
 
   for (const m of modelsToTry) {
-    res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent`, {
-      method: 'POST', headers, body: payload
-    });
-    if (res.ok) break;
-    if (res.status !== 404 && res.status !== 503 && res.status !== 429) break;
-    await new Promise(r => setTimeout(r, 800));
-  }
-
-  if (res && res.status === 404) {
-    const listRes = await fetch('https://generativelanguage.googleapis.com/v1beta/models', { headers });
-    if (listRes.ok) {
-      const listData = await listRes.json();
-      const found = (listData.models || []).find(m =>
-        (m.supportedGenerationMethods || []).includes('generateContent') && /flash/i.test(m.name)
-      );
-      if (found) {
-        res = await fetch(`https://generativelanguage.googleapis.com/v1beta/${found.name}:generateContent`, {
-          method: 'POST', headers, body: payload
-        });
+    try {
+      res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent`, {
+        method: 'POST', headers, body: payload
+      });
+      if (res.ok) break;
+      if (res.status === 404 || res.status === 503 || res.status === 429) {
+        await new Promise(r => setTimeout(r, 600));
+        continue;
       }
+      break;
+    } catch (netErr) {
+      continue;
     }
   }
 
   if (!res || !res.ok) {
-    const errBody = res ? await res.text() : '';
-    throw new Error(`Gemini error ${res ? res.status : 'network'}: ${errBody.slice(0, 120)}`);
+    throw new Error(`Gemini servers are busy (503). Please tap Detect again.`);
   }
   return await res.json();
 }

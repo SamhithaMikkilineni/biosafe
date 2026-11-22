@@ -698,8 +698,8 @@ function calculateImpact() {
 }
 
 /* ===== HYBRID AI PHOTO DETECTION (Roboflow + Gemini Vision Fallback) ===== */
-const AI_API_KEY = 'PASTE_YOUR_ROBOFLOW_PUBLISHABLE_KEY_HERE';      // Optional: paste Roboflow Publishable key here to hide UI input
-const GEMINI_API_KEY = 'PASTE_YOUR_GEMINI_API_KEY_HERE';  // Optional: paste Gemini API key here to hide UI input
+const AI_API_KEY = 'CbJkdn8SItzhZKwiCVYa';      // Optional: paste Roboflow Publishable key here to hide UI input
+const GEMINI_API_KEY = 'AQ.Ab8RN6JnE5Jxz6wKfqJCD_-prNIw1I1Ogz5K5U4XnYlSoWGlZA';  // Optional: paste Gemini API key here to hide UI input
 const AI_MIN_CONF = 0.15;
 const GEMINI_FALLBACK_THRESHOLD = 0.6;
 const AI_MAX_SIDE = 1024;
@@ -758,7 +758,7 @@ async function callGeminiAPI(apiKey, bodyObj) {
     'x-goog-api-key': apiKey.trim()
   };
   const payload = JSON.stringify(bodyObj);
-  const modelsToTry = ['gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-flash-latest'];
+  const modelsToTry = ['gemini-3.5-flash-lite', 'gemini-3.8-flash', 'gemini-3.1-flash-lite'];
   let res = null;
 
   for (const m of modelsToTry) {
@@ -768,7 +768,7 @@ async function callGeminiAPI(apiKey, bodyObj) {
       });
       if (res.ok) break;
       if (res.status === 404 || res.status === 503 || res.status === 429) {
-        await new Promise(r => setTimeout(r, 600));
+        await new Promise(r => setTimeout(r, 500));
         continue;
       }
       break;
@@ -778,7 +778,7 @@ async function callGeminiAPI(apiKey, bodyObj) {
   }
 
   if (!res || !res.ok) {
-    throw new Error(`Gemini servers are busy (503). Please tap Detect again.`);
+    throw new Error('GEMINI_UNAVAILABLE');
   }
   return await res.json();
 }

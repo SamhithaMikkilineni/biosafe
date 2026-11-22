@@ -200,13 +200,8 @@ td{color:#425466}
       <button class="active" data-page="dashboard"><span class="ico">▦</span><span>Dashboard</span></button>
       <button data-page="segregation"><span class="ico">◉</span><span>Waste segregation</span></button>
       <button data-page="records"><span class="ico">▤</span><span>Daily records</span></button>
-      <button data-page="treatment"><span class="ico">⚗</span><span>Treatment guide</span></button>
       <button data-page="analytics"><span class="ico">▥</span><span>Analytics</span></button>
-      <button data-page="safety"><span class="ico">♡</span><span>Health & safety</span></button>
       <button data-page="smart"><span class="ico">✦</span><span>Smart segregation</span></button>
-      <button data-page="chemistry"><span class="ico">⚗</span><span>Chemistry lab</span></button>
-      <button data-page="phlab"><span class="ico">◒</span><span>pH awareness</span></button>
-      <button data-page="chemguide"><span class="ico">🧪</span><span>Chemical waste guide</span></button>
       <button data-page="environment"><span class="ico">🌍</span><span>Environmental impact</span></button>
     </nav>
     <div class="side-note"><b>Segregate at source</b>Correct segregation protects healthcare workers, communities and the environment.</div>
@@ -284,16 +279,6 @@ td{color:#425466}
       <div class="card table-card"><div class="table-scroll"><table><thead><tr><th>Date</th><th>Category</th><th>Generated (kg)</th><th>Collected (kg)</th><th>Pending (kg)</th><th>Notes</th></tr></thead><tbody id="allRows"></tbody></table></div><div id="allEmpty" class="empty">No saved entries. Use the form to add a record.</div></div>
     </section>
 
-    <section class="page" id="treatment">
-      <div class="welcome"><div><div class="eyebrow">Chemistry in action</div><h2>Waste treatment & disinfection</h2><p>Different waste streams require different validated treatment pathways. Treatment must be performed by trained, authorised personnel using approved systems.</p></div><div class="welcome-mark">⚗️</div></div>
-      <div class="grid info-grid">
-        <div class="card info-card"><div class="info-icon">🧪</div><h3>Chemical disinfection</h3><p>Uses an approved chemical disinfectant to reduce or inactivate microorganisms on specified waste or surfaces. Effectiveness depends on the material, concentration, contact time and validated procedure.</p><span class="tag">Chemistry: disinfectant action</span></div>
-        <div class="card info-card"><div class="info-icon">♨️</div><h3>Autoclaving</h3><p>A validated steam sterilisation process using controlled temperature, pressure and exposure time. It is used for applicable waste streams under prescribed procedures.</p><span class="tag">Science: moist heat</span></div>
-        <div class="card info-card"><div class="info-icon">🌡️</div><h3>Other approved treatment</h3><p>Depending on the category, rules may specify incineration, plasma pyrolysis, microwaving, hydroclaving, dry-heat treatment, shredding or other approved routes.</p><span class="tag">Process: category-specific</span></div>
-      </div>
-      <div class="notice"><b>Safety note:</b> This page is for awareness, not a treatment protocol. It intentionally does not provide chemical mixing ratios, operating settings or do-it-yourself sterilisation steps. Never mix chemicals or attempt to treat biomedical waste yourself. Follow the facility's validated SOP and authorised operator guidance.</div>
-      <div class="card"><h3 style="font-size:14px;margin:0 0 8px">Why correct treatment matters</h3><ul style="font-size:12px;color:#647482;line-height:1.8;padding-left:19px"><li>Reduces infection risks and protects waste handlers and the public.</li><li>Prevents untreated waste from entering ordinary waste streams.</li><li>Supports safe recycling of eligible materials after prescribed treatment.</li><li>Helps reduce environmental contamination when treatment and emissions controls are properly managed.</li></ul></div>
-    </section>
 
     <section class="page" id="analytics">
       <div class="section-head" style="margin-top:0"><div><h3>Waste analytics</h3><p>Visual summaries calculated from records saved in this browser</p></div><button class="btn secondary" onclick="exportCSV()">Export report data</button></div>
@@ -306,17 +291,6 @@ td{color:#425466}
       <div class="grid charts"><div class="card chart-card"><h3 style="font-size:14px;margin:0">Generated vs collected by category</h3><div class="chart-wrap"><canvas id="analyticsChart"></canvas></div><div class="legend"><span><i class="dot" style="background:#168b83"></i>Generated</span><span><i class="dot" style="background:#9bcfc5"></i>Collected</span></div></div><div class="card chart-card"><h3 style="font-size:14px;margin:0">Category distribution</h3><div class="chart-wrap"><canvas id="analyticsDonut"></canvas></div><div class="legend" id="donutLegend"></div></div></div>
     </section>
 
-    <section class="page" id="safety">
-      <div class="welcome"><div><div class="eyebrow">Protect people • Protect nature</div><h2>Health hazards & safety awareness</h2><p>Safe biomedical waste management starts with training, correct segregation, suitable protective equipment and authorised collection.</p></div><div class="welcome-mark">🛡️</div></div>
-      <div class="grid safety-grid">
-        <div class="card safety-item"><div class="info-icon">🦠</div><div><b>Infection exposure</b><p>Improperly managed infectious waste can expose workers and communities to harmful microorganisms.</p></div></div>
-        <div class="card safety-item"><div class="info-icon">⚠️</div><div><b>Sharps injuries</b><p>Needles and blades can cause injuries. Sharps belong in the designated puncture-proof container.</p></div></div>
-        <div class="card safety-item"><div class="info-icon">🌊</div><div><b>Water and soil pollution</b><p>Unsafe dumping or untreated discharge can contaminate the surrounding environment.</p></div></div>
-        <div class="card safety-item"><div class="info-icon">☣️</div><div><b>Chemical hazards</b><p>Some discarded chemicals and medicines require special handling to prevent exposure and pollution.</p></div></div>
-      </div>
-      <div class="section-head"><div><h3>Everyday safety principles</h3><p>General awareness for healthcare and support staff</p></div></div>
-      <div class="card"><ul style="font-size:12px;color:#647482;line-height:2;padding-left:20px"><li>Segregate waste immediately where it is generated.</li><li>Use the correct labelled colour-coded bag or container.</li><li>Never recap, bend or manually handle used needles; use the facility-approved sharps procedure.</li><li>Wear the personal protective equipment required by the facility.</li><li>Do not overfill bags or containers; follow approved closure and storage procedures.</li><li>Report spills, injuries or collection delays promptly through the facility's safety process.</li><li>Hand over waste only to authorised collection and treatment services.</li></ul></div>
-    </section>
 
     <section class="page" id="smart">
       <div class="welcome"><div><div class="eyebrow">Feature 01 • Smart assistant</div><h2>Find the correct waste category</h2><p>Upload a photo and let the AI detect the waste item, or search by name, to see an educational category suggestion and handling reminder.</p></div><div class="welcome-mark">✦</div></div>
@@ -366,28 +340,7 @@ td{color:#425466}
       <div class="notice"><b>Important:</b> Some items have special exclusions or handling requirements. If an item is not recognised or its contamination status is uncertain, consult the facility's authorised waste officer.</div>
     </section>
 
-    <section class="page" id="chemistry">
-      <div class="welcome"><div><div class="eyebrow">Feature 02 • Chemistry learning</div><h2>Treatment process simulator</h2><p>Explore the scientific principles behind common authorised biomedical-waste treatment methods.</p></div><div class="welcome-mark">⚗</div></div>
-      <div class="grid info-grid">
-        <div class="card info-card"><div class="info-icon">♨️</div><h3>Autoclaving</h3><p><b>Principle:</b> Moist heat denatures essential microbial proteins and damages cellular structures. Validated steam cycles are used for applicable waste streams.</p><span class="tag">Moist-heat treatment</span></div>
-        <div class="card info-card"><div class="info-icon">🧴</div><h3>Chemical disinfection</h3><p><b>Principle:</b> Approved disinfectants can disrupt cell membranes, oxidise cellular components or denature proteins. Effectiveness depends on the validated product and procedure.</p><span class="tag">Chemical reactions</span></div>
-        <div class="card info-card"><div class="info-icon">🔥</div><h3>Incineration</h3><p><b>Principle:</b> Controlled high-temperature oxidation converts suitable waste into gases and ash. It requires authorised equipment and emissions controls.</p><span class="tag">Combustion and oxidation</span></div>
-      </div>
-      <div class="card" style="margin-top:16px"><h3 style="font-size:14px">Explore a treatment method</h3><div class="field"><label for="treatmentSelect">Select process</label><select id="treatmentSelect" onchange="showTreatment()"><option value="steam">Autoclaving</option><option value="chemical">Chemical disinfection</option><option value="thermal">Incineration</option></select></div><div id="treatmentDetail" class="notice">Autoclaving uses moist heat to inactivate microorganisms in waste streams for which this treatment is approved.</div></div>
-      <div class="notice"><b>Safety boundary:</b> This simulator is for coursework only. It does not provide operating settings, chemical recipes or instructions to treat waste. Never attempt treatment yourself.</div>
-    </section>
 
-    <section class="page" id="phlab">
-      <div class="welcome"><div><div class="eyebrow">Feature 03 • Acids and bases</div><h2>Interactive pH awareness</h2><p>Learn how pH describes acidity and alkalinity and why chemical waste needs identification before authorised disposal.</p></div><div class="welcome-mark">🧪</div></div>
-      <div class="card"><h3 style="font-size:14px">Explore the pH scale</h3><div class="field"><label for="phValue">Select a pH value: <strong id="phNumber">7</strong></label><input id="phValue" type="range" min="0" max="14" step="1" value="7" oninput="updatePH()" style="width:100%;accent-color:#168b83"></div><div style="height:18px;border-radius:20px;background:linear-gradient(90deg,#d94b54,#ed9a52,#f3d45b,#8bcf8d,#4b9acb);margin:18px 0 10px"></div><div style="display:flex;justify-content:space-between;font-size:10px;color:#71808c"><span>0 • Acidic</span><span>7 • Neutral</span><span>14 • Basic</span></div><div id="phResult" class="notice" aria-live="polite">pH 7: Neutral. Pure water is commonly used as an introductory example.</div></div>
-      <div class="notice"><b>Waste safety:</b> pH alone does not determine whether a waste is safe or how it must be disposed of. Do not mix, neutralise or pour laboratory chemicals into drains based on this demonstration. Follow the approved chemical-waste procedure.</div>
-    </section>
-
-    <section class="page" id="chemguide">
-      <div class="welcome"><div><div class="eyebrow">Feature 04 • Chemical identification</div><h2>Chemical waste identification guide</h2><p>Review examples of chemical waste, their broad hazards and why compatibility checks matter.</p></div><div class="welcome-mark">🧪</div></div>
-      <div class="card"><div class="field"><label for="chemicalSelect">Choose a chemical waste type</label><select id="chemicalSelect" onchange="showChemical()"><option value="solvent">Organic solvents</option><option value="acid">Laboratory acids</option><option value="alkali">Laboratory alkalis</option><option value="reagent">Expired or unused reagents</option><option value="disinfectant">Used disinfectants</option></select></div><div id="chemicalDetail" class="notice">Organic solvents may be flammable or toxic. Keep waste streams identified and segregated according to the institution's chemical-waste SOP.</div></div>
-      <div class="notice"><b>Compatibility warning:</b> Never mix unknown chemicals or combine waste streams. Keep original labels or use approved labels, consult safety data sheets (SDS), and hand over to authorised handlers.</div>
-    </section>
 
     <section class="page" id="environment">
       <div class="welcome"><div><div class="eyebrow">Feature 05 • Environmental chemistry</div><h2>Waste generation impact explorer</h2><p>Explore how recorded waste quantities can be summarised and why poor handling can affect soil, water and air.</p></div><div class="welcome-mark">🌍</div></div>
@@ -626,13 +579,8 @@ const titles = {
   dashboard: 'Dashboard overview',
   segregation: 'Waste segregation guide',
   records: 'Daily waste records',
-  treatment: 'Treatment & disinfection',
   analytics: 'Waste analytics',
-  safety: 'Health & safety',
   smart: 'Smart segregation assistant',
-  chemistry: 'Treatment process simulator',
-  phlab: 'pH awareness lab',
-  chemguide: 'Chemical waste identification',
   environment: 'Environmental impact explorer'
 };
 function showPage(name) {

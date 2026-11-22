@@ -859,17 +859,19 @@ async function detectWaste(imageFileOrCanvas, apiKey, modelId, version, geminiKe
 
   let roboflowData = { predictions: [], image: { width: cw, height: ch } };
   if (apiKey && apiKey.trim()) {
-    const url = `https://detect.roboflow.com/${encodeURIComponent(MODEL_ID)}/${encodeURIComponent(VERSION)}?api_key=${encodeURIComponent(apiKey.trim())}&confidence=15`;
-    const response = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: base64Image
-    });
-    if (!response.ok) {
-      const errText = await response.text();
-      throw new Error(`Roboflow API Error (${response.status}): ${errText}`);
+    try {
+      const url = `https://detect.roboflow.com/${encodeURIComponent(MODEL_ID)}/${encodeURIComponent(VERSION)}?api_key=${encodeURIComponent(apiKey.trim())}&confidence=15`;
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: base64Image
+      });
+      if (response.ok) {
+        roboflowData = await response.json();
+      }
+    } catch (rfErr) {
+      console.warn("Roboflow fetch skipped, continuing to Gemini Vision:", rfErr);
     }
-    roboflowData = await response.json();
   }
 
   const preds = Array.isArray(roboflowData.predictions) ? roboflowData.predictions : [];
@@ -886,13 +888,21 @@ async function detectWaste(imageFileOrCanvas, apiKey, modelId, version, geminiKe
         usedFallback: true
       };
     } catch (gemErr) {
-      throw new Error("Gemini Vision failed: " + gemErr.message);
+      const imgW = (roboflowData.image && roboflowData.image.width) || cw;
+      const imgH = (roboflowData.image && roboflowData.image.height) || ch;
+      const generic = new Set(['plastic', 'paper']);
+      const specific = preds.filter(d => !generic.has(aiNorm(d.class || d.class_name || '')));
+      const pool = specific.length ? specific : preds;
+      const topDet = [...pool].sort((a, b) => b.confidence - a.confidence)[0];
+      return {
+        predictions: topDet ? [topDet] : [],
+        image: { width: imgW, height: imgH }
+      };
     }
   }
 
   return roboflowData;
 }
-
 function aiDrawBoxes(cv, dets, scale) {
   const x = cv.getContext('2d'), fs = Math.max(12, Math.round(cv.width / 45)), pad = 4;
   x.lineWidth = Math.max(2, Math.round(cv.width / 300));
